@@ -11,6 +11,6 @@ export default function createResponse(success, message, data) {
   return {
     status: success ? "success" : "error",
     message: message,
-    data: data,
+    [success ? "data" : "error"]: data,
   };
 }
