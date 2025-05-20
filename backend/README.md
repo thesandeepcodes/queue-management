@@ -1,12 +1,14 @@
-# Endpoints
+# Endpoints - Queue Management System
 
-Here is the brief description of the API routes for this Queue Management Project. Please make sure to read it!
+A RESTful API for managing events, queues, and guest check-ins with admin control and analytics.
+
+---
 
 ## 🔐 `/auth` – Authentication Routes
 
 ### `POST /auth/register`
 
-**Description:** Registers a new admin.
+Registers a new admin user.
 
 **Request Body:**
 
@@ -23,18 +25,18 @@ Here is the brief description of the API routes for this Queue Management Projec
 ```json
 {
   "status": "success",
-  "message": "Registeration successful"
+  "message": "Registration successful"
 }
 ```
 
-**Status Codes:**  
+**Status Codes:**
 `201 Created`, `400 Bad Request`, `409 Conflict`
 
 ---
 
 ### `POST /auth/login`
 
-**Description:** Logs in an admin.
+Logs in an admin.
 
 **Request Body:**
 
@@ -57,8 +59,81 @@ Here is the brief description of the API routes for this Queue Management Projec
 }
 ```
 
-**Status Codes:**  
+**Status Codes:**
 `200 OK`, `401 Unauthorized`
+
+---
+
+### `GET /auth/me`
+
+Fetches the current logged-in user's details using the provided token.
+
+**Headers**
+
+```json
+{
+  "Authorization": "Bearer <JWT_TOKEN>"
+}
+```
+
+**Response**
+
+```json
+{
+  "status": "success",
+  "message": "User details fetched successfully",
+  "data": {
+    "_id": "user123",
+    "username": "John Doe",
+    "email": "john@example.com",
+    "createdAt": "2025-05-20T12:00:00Z",
+    "updatedAt": "2025-05-20T12:00:00Z"
+  }
+}
+```
+
+**Status Codes:**
+`200 OK`, `401 Unauthorized`
+
+---
+
+### `PUT /auth/update`
+
+Allows the logged-in user to update their profile information.
+
+**Headers**
+
+```json
+{
+  "Authorization": "Bearer <JWT_TOKEN>"
+}
+```
+
+**Request Body**
+
+```json
+{
+  "username": "New Username",
+  "email": "newemail@example.com"
+}
+```
+
+**Response**
+
+```json
+{
+  "status": "success",
+  "message": "User updated successfully",
+  "user": {
+    "_id": "user123",
+    "username": "New Username",
+    "email": "newemail@example.com"
+  }
+}
+```
+
+**Status Codes:**
+`200 OK`, `400 Bad Request`, `401 Unauthorized`
 
 ---
 
@@ -66,7 +141,7 @@ Here is the brief description of the API routes for this Queue Management Projec
 
 ### `POST /events/create`
 
-**Description:** Creates a new event.
+Creates a new event.
 
 **Request Body:**
 
@@ -74,8 +149,7 @@ Here is the brief description of the API routes for this Queue Management Projec
 {
   "name": "Tech Conference 2025",
   "description": "Annual tech gathering",
-  "capacity": 200,
-  "adminId": "admin123"
+  "userId": "user123"
 }
 ```
 
@@ -84,73 +158,88 @@ Here is the brief description of the API routes for this Queue Management Projec
 ```json
 {
   "message": "Event created successfully",
-  "event": {
+  "data": {
     "_id": "event123",
     "name": "Tech Conference 2025",
     "description": "Annual tech gathering",
-    "capacity": 200,
-    "adminId": "admin123"
+    "createdBy": "user123"
   }
 }
 ```
 
-**Status Codes:**  
+**Status Codes:**
 `201 Created`, `400 Bad Request`
 
 ---
 
 ### `GET /events/:eventId`
 
-**Description:** Retrieves public event details.
+Publicly retrieves event details.
 
 **Response:**
 
 ```json
 {
-  "event": {
-    "_id": "event123",
+  "status": "success",
+  "message": "Event fetched successfully",
+  "data": {
+    "_id": "eventId",
     "name": "Tech Conference 2025",
     "description": "Annual tech gathering",
-    "capacity": 200
+    "createdBy": "userId123",
+    "queues": [],
+    "currentPosition": 0,
+    "createdAt": "2025-05-20T08:40:05.745Z",
+    "updatedAt": "2025-05-20T08:40:05.745Z"
   }
 }
 ```
 
-**Status Codes:**  
-`200 OK`, `404 Not Found`
+**Status Codes:**
+`200 OK`, `404 Not Found`, `400 Bad Request`
 
 ---
 
-### `GET /events/admin/:adminId`
+### `GET /events`
 
-**Description:** Lists all events created by an admin.
+Returns all events created by the logged-in user (admin).
 
 **Response:**
 
 ```json
 {
-  "events": [
-    { "_id": "event123", "name": "Tech Conference", "capacity": 200 },
-    { "_id": "event456", "name": "Workshop", "capacity": 100 }
+  "status": "success",
+  "message": "Events fetched successfully",
+  "data": [
+    {
+      "_id": "682c3fe534d38895b839c280",
+      "name": "Tech Conference 2025",
+      "description": "Annual tech gathering",
+      "createdBy": "682c25c493c7a7b7e302acd7",
+      "queues": [],
+      "currentPosition": 0,
+      "createdAt": "2025-05-20T08:40:05.745Z",
+      "updatedAt": "2025-05-20T08:40:05.745Z"
+    }
   ]
 }
 ```
 
-**Status Codes:**  
-`200 OK`
+**Status Codes:**
+`200 OK`, `400 Bad Request`
 
 ---
 
 ### `PUT /events/:eventId`
 
-**Description:** Updates an existing event.
+Updates an existing event.
 
-**Request Body:** _(Any updatable fields)_
+**Request Body:**
 
 ```json
 {
-  "name": "Updated Conference",
-  "capacity": 300
+  "name": "Tech Conference 2025",
+  "description": "Annual tech gathering.."
 }
 ```
 
@@ -158,19 +247,25 @@ Here is the brief description of the API routes for this Queue Management Projec
 
 ```json
 {
+  "status": "success",
   "message": "Event updated successfully",
-  "event": { "_id": "event123", "name": "Updated Conference", "capacity": 300 }
+  "data": {
+    "_id": "682c3fe534d38895b839c280",
+    "name": "Tech Conference 2025",
+    "description": "Annual tech gathering..",
+    "currentPosition": 0
+  }
 }
 ```
 
-**Status Codes:**  
+**Status Codes:**
 `200 OK`, `404 Not Found`
 
 ---
 
 ### `DELETE /events/:eventId`
 
-**Description:** Deletes an event.
+Deletes an event.
 
 **Response:**
 
@@ -180,7 +275,7 @@ Here is the brief description of the API routes for this Queue Management Projec
 }
 ```
 
-**Status Codes:**  
+**Status Codes:**
 `200 OK`, `404 Not Found`
 
 ---
@@ -189,7 +284,7 @@ Here is the brief description of the API routes for this Queue Management Projec
 
 ### `GET /qr/generate/:eventId`
 
-**Description:** Generates a QR code that embeds the event ID.
+Generates a QR code linking to the event.
 
 **Response:**
 
@@ -199,16 +294,16 @@ Here is the brief description of the API routes for this Queue Management Projec
 }
 ```
 
-**Status Codes:**  
+**Status Codes:**
 `200 OK`, `404 Not Found`
 
 ---
 
-## 👤 `/guests` – Guest Queue Access (No Login)
+## 👤 `/guests` – Guest Queue (No Login)
 
 ### `POST /guests/join/:eventId`
 
-**Description:** Guest joins the queue using event QR.
+Guest joins the event queue.
 
 **Request Body:**
 
@@ -229,14 +324,14 @@ Here is the brief description of the API routes for this Queue Management Projec
 }
 ```
 
-**Status Codes:**  
-`201 Created`, `400 Bad Request`, `403 Event Full`
+**Status Codes:**
+`201 Created`, `400 Bad Request`, `403 Forbidden`
 
 ---
 
 ### `GET /guests/status/:guestId`
 
-**Description:** Returns guest's full queue status.
+Returns full queue status.
 
 **Response:**
 
@@ -249,14 +344,14 @@ Here is the brief description of the API routes for this Queue Management Projec
 }
 ```
 
-**Status Codes:**  
+**Status Codes:**
 `200 OK`, `404 Not Found`
 
 ---
 
 ### `GET /guests/position/:guestId`
 
-**Description:** Guest's current queue number.
+Gets guest’s current position.
 
 **Response:**
 
@@ -267,14 +362,14 @@ Here is the brief description of the API routes for this Queue Management Projec
 }
 ```
 
-**Status Codes:**  
+**Status Codes:**
 `200 OK`, `404 Not Found`
 
 ---
 
 ### `DELETE /guests/leave/:guestId`
 
-**Description:** Guest leaves the queue voluntarily.
+Guest voluntarily leaves the queue.
 
 **Response:**
 
@@ -284,7 +379,7 @@ Here is the brief description of the API routes for this Queue Management Projec
 }
 ```
 
-**Status Codes:**  
+**Status Codes:**
 `200 OK`, `404 Not Found`
 
 ---
@@ -293,7 +388,7 @@ Here is the brief description of the API routes for this Queue Management Projec
 
 ### `GET /queue/event/:eventId`
 
-**Description:** Returns full guest list for event queue.
+Returns guest queue for a given event.
 
 **Response:**
 
@@ -306,14 +401,14 @@ Here is the brief description of the API routes for this Queue Management Projec
 }
 ```
 
-**Status Codes:**  
+**Status Codes:**
 `200 OK`, `404 Not Found`
 
 ---
 
 ### `PUT /queue/move/:eventId`
 
-**Description:** Admin reorders the queue manually.
+Admin manually reorders queue.
 
 **Request Body:**
 
@@ -332,14 +427,14 @@ Here is the brief description of the API routes for this Queue Management Projec
 }
 ```
 
-**Status Codes:**  
+**Status Codes:**
 `200 OK`, `400 Bad Request`
 
 ---
 
 ### `PUT /queue/serve/:eventId`
 
-**Description:** Marks a guest as served and moves queue.
+Marks guest as served and advances the queue.
 
 **Request Body:**
 
@@ -357,14 +452,14 @@ Here is the brief description of the API routes for this Queue Management Projec
 }
 ```
 
-**Status Codes:**  
+**Status Codes:**
 `200 OK`, `404 Not Found`
 
 ---
 
 ### `DELETE /queue/remove/:guestId`
 
-**Description:** Admin removes a guest from the queue.
+Admin removes guest from queue.
 
 **Response:**
 
@@ -374,22 +469,22 @@ Here is the brief description of the API routes for this Queue Management Projec
 }
 ```
 
-**Status Codes:**  
+**Status Codes:**
 `200 OK`, `404 Not Found`
 
 ---
 
-## 🔔 `/notifications` – Manual Push Notices
+## 🔔 `/notifications` – Manual Messages
 
 ### `POST /notifications/push/:eventId`
 
-**Description:** Sends a manual message to all guests of an event.
+Sends a broadcast message to all guests.
 
 **Request Body:**
 
 ```json
 {
-  "message": "The event will start in 10 minutes!"
+  "message": "Event starts in 10 minutes!"
 }
 ```
 
@@ -401,16 +496,16 @@ Here is the brief description of the API routes for this Queue Management Projec
 }
 ```
 
-**Status Codes:**  
+**Status Codes:**
 `200 OK`, `404 Not Found`
 
 ---
 
-## 📊 `/analytics` – Event Statistics
+## 📊 `/analytics` – Insights & Stats
 
 ### `GET /analytics/event/:eventId`
 
-**Description:** Analytics for a specific event.
+Analytics for one event.
 
 **Response:**
 
@@ -423,14 +518,14 @@ Here is the brief description of the API routes for this Queue Management Projec
 }
 ```
 
-**Status Codes:**  
+**Status Codes:**
 `200 OK`
 
 ---
 
-### `GET /analytics/admin/:adminId`
+### `GET /analytics/user/:userId`
 
-**Description:** Combined analytics for all events by an admin.
+All events analytics for an admin user.
 
 **Response:**
 
@@ -441,17 +536,12 @@ Here is the brief description of the API routes for this Queue Management Projec
       "eventId": "event123",
       "totalGuests": 100,
       "served": 90
-    },
-    {
-      "eventId": "event456",
-      "totalGuests": 50,
-      "served": 45
     }
   ]
 }
 ```
 
-**Status Codes:**  
+**Status Codes:**
 `200 OK`
 
 ---
@@ -460,7 +550,7 @@ Here is the brief description of the API routes for this Queue Management Projec
 
 ### `GET /system/ping`
 
-**Description:** Check if API is alive.
+Checks if API is alive.
 
 **Response:**
 
@@ -475,7 +565,7 @@ Here is the brief description of the API routes for this Queue Management Projec
 
 ### `GET /system/server-time`
 
-**Description:** Get current server time.
+Returns current server time.
 
 **Response:**
 
@@ -485,47 +575,49 @@ Here is the brief description of the API routes for this Queue Management Projec
 }
 ```
 
-# Tree Strucute of the API
+---
 
-```tree structure
+## 📁 API Route Structure
 
+```
 API
 │
 ├── auth/
-│ ├── POST /register → Admin register
-│ ├── POST /login → Admin login
-│ └── POST /logout → Admin logout
+│   ├── POST /register
+│   ├── POST /login
+│   ├── GET /me
+│   └── PUT /update
 │
 ├── events/
-│ ├── POST /create → Create new event
-│ ├── GET /:eventId → Get event details (public)
-│ ├── GET /admin/:adminId → Get all events by admin
-│ ├── PUT /:eventId → Update event details
-│ └── DELETE /:eventId → Delete an event
+│   ├── POST /create
+│   ├── GET /:eventId
+│   ├── GET /user/:userId
+│   ├── PUT /:eventId
+│   └── DELETE /:eventId
 │
 ├── qr/
-│ └── GET /generate/:eventId → Generate QR code for an event
+│   └── GET /generate/:eventId
 │
 ├── guests/
-│ ├── POST /join/:eventId → Guest joins queue via QR
-│ ├── GET /status/:guestId → Get full queue status for guest
-│ ├── GET /position/:guestId → Get current queue position
-│ └── DELETE /leave/:guestId → Guest leaves the queue
+│   ├── POST /join/:eventId
+│   ├── GET /status/:guestId
+│   ├── GET /position/:guestId
+│   └── DELETE /leave/:guestId
 │
-├── queue/ (Admin-only)
-│ ├── GET /event/:eventId → Admin gets full queue list
-│ ├── PUT /move/:eventId → Admin moves guest in queue
-│ ├── PUT /serve/:eventId → Admin marks guest as served
-│ └── DELETE /remove/:guestId → Admin removes guest from queue
+├── queue/
+│   ├── GET /event/:eventId
+│   ├── PUT /move/:eventId
+│   ├── PUT /serve/:eventId
+│   └── DELETE /remove/:guestId
 │
 ├── notifications/
-│ └── POST /push/:eventId → Send live update to all guests
+│   └── POST /push/:eventId
 │
 ├── analytics/
-│ ├── GET /event/:eventId → Analytics for a specific event
-│ └── GET /admin/:adminId → All events analytics for admin
+│   ├── GET /event/:eventId
+│   └── GET /user/:userId
 │
-└── system/ (Optional Dev Tools)
-├── GET /ping → API health check
-└── GET /server-time → Get server time
+└── system/
+    ├── GET /ping
+    └── GET /server-time
 ```

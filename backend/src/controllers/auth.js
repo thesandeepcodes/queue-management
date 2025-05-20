@@ -67,3 +67,57 @@ export const loginUser = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getUser = async (req, res, next) => {
+  try {
+    const decoded = req.user;
+    const user = await User.findById(decoded.userId);
+    const userObject = user.toObject();
+    delete userObject.password;
+
+    return res.json(
+      createResponse(true, "User details fetched successfully", userObject)
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateUser = async (req, res, next) => {
+  try {
+    const decoded = req.user;
+    const updates = {};
+
+    if (req.body?.username) updates.username = req.body.username;
+    if (req.body?.email) updates.email = req.body.email;
+
+    if (Object.keys(updates).length === 0) {
+      throw new AppError(
+        HTTP.BAD_REQUEST,
+        createResponse(
+          false,
+          "No fields to update. Allowed fields: username, email"
+        )
+      );
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      decoded.userId,
+      { $set: updates },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    return res.json(
+      createResponse(true, "User updated successfully", {
+        _id: updatedUser._id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+      })
+    );
+  } catch (e) {
+    next(e);
+  }
+};

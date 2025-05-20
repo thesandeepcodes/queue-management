@@ -1,21 +1,31 @@
 import { Router } from "express";
-import createResponse from "../../lib/Response.js";
-import authRoutes from "./auth.js";
 import { ZodError } from "zod";
-import HTTP from "../../lib/HTTP.js";
 import { parseZodError } from "../../lib/apiHelpers.js";
+import createResponse from "../../lib/Response.js";
+import HTTP from "../../lib/HTTP.js";
 import AppError from "../../errors/AppError.js";
+
+import authRoutes from "./auth.js";
+import eventRoutes from "./events.js";
+import authorizeUser from "../../middlewares/authorizeUser.js";
 
 const v1Routes = Router();
 
+// Home (v1) route
 v1Routes.get("/", (req, res) => {
   return res.json(
     createResponse(true, "Welcome to the Queue Management API(v1)", undefined)
   );
 });
 
+// Routes
 v1Routes.use("/auth", authRoutes);
+v1Routes.use("/events", authorizeUser, eventRoutes);
 
+// Global error handler
+// If the error is a ZodError, return a validation error
+// If the error is an AppError, return the error
+// Otherwise, pass the error to the next middleware
 v1Routes.use((error, req, res, next) => {
   if (error instanceof ZodError) {
     return res
