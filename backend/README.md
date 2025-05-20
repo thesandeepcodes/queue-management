@@ -286,16 +286,34 @@ Deletes an event.
 
 Generates a QR code linking to the event.
 
+**Request**
+
+`configuration (optional)` options based on the qrcode-svg configuration
+
+```json
+{
+  "configuration": {
+    "color": "#000000",
+    "background": "#ffffff",
+    ...
+  }
+}
+```
+
 **Response:**
 
 ```json
 {
-  "qrCodeUrl": "https://yourdomain.com/qrcodes/event123.png"
+  "status": "success",
+  "message": "QR code generated successfully",
+  "data": {
+    "svg": "<?xml .... ... "
+  }
 }
 ```
 
 **Status Codes:**
-`200 OK`, `404 Not Found`
+`200 OK`
 
 ---
 

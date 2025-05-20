@@ -7,6 +7,7 @@ import AppError from "../../errors/AppError.js";
 
 import authRoutes from "./auth.js";
 import eventRoutes from "./events.js";
+import qrRoutes from "./qr.js";
 import authorizeUser from "../../middlewares/authorizeUser.js";
 
 const v1Routes = Router();
@@ -21,6 +22,7 @@ v1Routes.get("/", (req, res) => {
 // Routes
 v1Routes.use("/auth", authRoutes);
 v1Routes.use("/events", authorizeUser, eventRoutes);
+v1Routes.use("/qr", qrRoutes);
 
 // Global error handler
 // If the error is a ZodError, return a validation error
