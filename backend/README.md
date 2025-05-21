@@ -336,9 +336,13 @@ Guest joins the event queue.
 
 ```json
 {
-  "message": "Guest joined queue",
-  "guestId": "guest123",
-  "position": 5
+  "status": "success",
+  "message": "Guest joined successfully",
+  "data": {
+    "event": "Tech Conference 2025",
+    "guestId": "guestId123",
+    "position": 1
+  }
 }
 ```
 
@@ -347,36 +351,23 @@ Guest joins the event queue.
 
 ---
 
-### `GET /guests/status/:guestId`
+### `GET /guests/:guestId`
 
-Returns full queue status.
-
-**Response:**
-
-```json
-{
-  "guestId": "guest123",
-  "eventId": "event123",
-  "position": 5,
-  "status": "waiting"
-}
-```
-
-**Status Codes:**
-`200 OK`, `404 Not Found`
-
----
-
-### `GET /guests/position/:guestId`
-
-Gets guest’s current position.
+Returns full queue / guest information.
 
 **Response:**
 
 ```json
 {
-  "position": 5,
-  "status": "waiting"
+  "status": "success",
+  "message": "Guest found successfully",
+  "data": {
+    "_id": "guestId123",
+    "event": "eventId123",
+    "name": "Attendee Name",
+    "served": false,
+    "joinedAt": "2025-05-20T15:50:06.465Z"
+  }
 }
 ```
 
@@ -387,13 +378,18 @@ Gets guest’s current position.
 
 ### `DELETE /guests/leave/:guestId`
 
-Guest voluntarily leaves the queue.
+Guest voluntarily leaves the queue/.
 
 **Response:**
 
 ```json
 {
-  "message": "Guest removed from queue"
+  "status": "success",
+  "message": "Guest left successfully",
+  "data": {
+    "guestId": "guestId123..",
+    "name": "Attendee Name"
+  }
 }
 ```
 
@@ -494,7 +490,7 @@ Admin removes guest from queue.
 
 ## 🔔 `/notifications` – Manual Messages
 
-### `POST /notifications/push/:eventId`
+### `POST /notifications/:eventId`
 
 Sends a broadcast message to all guests.
 
@@ -510,12 +506,105 @@ Sends a broadcast message to all guests.
 
 ```json
 {
-  "message": "Notification sent to guests"
+  "status": "success",
+  "message": "Notification sent to attendees",
+  "data": {
+    "event": "eventId123",
+    "message": "Event starts in 10 minutes!",
+    "_id": "notificationId",
+    "createdAt": "2025-05-21T05:21:03.335Z",
+    "updatedAt": "2025-05-21T05:21:03.335Z"
+  }
 }
 ```
 
 **Status Codes:**
 `200 OK`, `404 Not Found`
+
+---
+
+### `GET /notifications/:eventId`
+
+list all the notifications sent to eventId
+
+**Response:**
+
+```json
+{
+  "status": "success",
+  "message": "Notification fetched successfully",
+  "data": [
+    {
+      "event": "eventId123",
+      "message": "Event starts in 10 minutes!",
+      "_id": "notificationId",
+      "createdAt": "2025-05-21T05:21:03.335Z",
+      "updatedAt": "2025-05-21T05:21:03.335Z"
+    }
+  ]
+}
+```
+
+**Status Codes:**
+`200 OK`
+
+---
+
+### `PUT /notifications/:notificationId`
+
+**Request**
+
+```json
+{
+  "message": "Event starts in 20 minutes!"
+}
+```
+
+**Response:**
+
+```json
+{
+  "status": "success",
+  "message": "Notification updated successfully",
+  "data": [
+    {
+      "event": "eventId123",
+      "message": "Event starts in 20 minutes!",
+      "_id": "notificationId",
+      "createdAt": "2025-05-21T05:21:03.335Z",
+      "updatedAt": "2025-05-21T05:21:03.335Z"
+    }
+  ]
+}
+```
+
+**Status Codes:**
+`200 OK`, `404 Not Found`, `401 Unauthorized`
+
+---
+
+### `DELETE /notifications/:notificationId`
+
+**Response:**
+
+```json
+{
+  "status": "success",
+  "message": "Notification deleted successfully",
+  "data": [
+    {
+      "event": "eventId123",
+      "message": "Event starts in 20 minutes!",
+      "_id": "notificationId",
+      "createdAt": "2025-05-21T05:21:03.335Z",
+      "updatedAt": "2025-05-21T05:21:03.335Z"
+    }
+  ]
+}
+```
+
+**Status Codes:**
+`200 OK`, `404 Not Found`, `401 Unauthorized`
 
 ---
 
@@ -529,15 +618,23 @@ Analytics for one event.
 
 ```json
 {
-  "totalGuests": 100,
-  "served": 80,
-  "noShows": 5,
-  "avgWaitTime": "12 minutes"
+  "_id": "682c4b92ddde587f0ef9396b",
+  "name": "Tech Conference 2025",
+  "description": "",
+  "createdBy": "682c25c493c7a7b7e302acd7",
+  "queues": [],
+  "currentPosition": 0,
+  "totalQueues": 100,
+  "servedQueues": 80,
+  "currentPosition": 0,
+  "averageQueueTime": 720000, // in ms
+  "createdAt": "2025-05-20T09:29:54.387Z",
+  "updatedAt": "2025-05-21T04:18:57.814Z"
 }
 ```
 
 **Status Codes:**
-`200 OK`
+`200 OK`, `401 Unauthorized`
 
 ---
 
@@ -549,49 +646,28 @@ All events analytics for an admin user.
 
 ```json
 {
-  "events": [
+  "status": "success",
+  "message": "Events analytics fetched successfully",
+  "data": [
     {
-      "eventId": "event123",
-      "totalGuests": 100,
-      "served": 90
+      "_id": "eventId",
+      "name": "Tech Conference 2025",
+      "description": "",
+      "createdBy": "userId",
+      "queues": [],
+      "currentPosition": 0,
+      "createdAt": "2025-05-20T09:29:54.387Z",
+      "updatedAt": "2025-05-21T04:18:57.814Z",
+      "totalQueues": 2,
+      "servedQueues": 0,
+      "averageQueueTime": 0
     }
   ]
 }
 ```
 
 **Status Codes:**
-`200 OK`
-
----
-
-## 🛠️ `/system` – Developer Utilities
-
-### `GET /system/ping`
-
-Checks if API is alive.
-
-**Response:**
-
-```json
-{
-  "status": "OK",
-  "uptime": "2356 seconds"
-}
-```
-
----
-
-### `GET /system/server-time`
-
-Returns current server time.
-
-**Response:**
-
-```json
-{
-  "serverTime": "2025-04-04T18:00:00Z"
-}
-```
+`200 OK`, `401 Unauthorized`
 
 ---
 
@@ -629,13 +705,12 @@ API
 │   └── DELETE /remove/:guestId
 │
 ├── notifications/
-│   └── POST /push/:eventId
+│   ├── GET /:eventId
+│   ├── POST /:eventId
+│   ├── PUT /:notificationId
+│   ├── DELETE /:notificationId
 │
-├── analytics/
-│   ├── GET /event/:eventId
-│   └── GET /user/:userId
-│
-└── system/
-    ├── GET /ping
-    └── GET /server-time
+└── analytics/
+    ├── GET /event/:eventId
+    └── GET /user/:userId
 ```

@@ -7,10 +7,6 @@ const queueSchema = new mongoose.Schema(
       ref: "Event",
       required: true,
     },
-    sessionId: {
-      type: String,
-      required: true,
-    },
     name: {
       type: String,
       required: true,
@@ -22,6 +18,14 @@ const queueSchema = new mongoose.Schema(
       default: Date.now,
     },
     leftAt: Date,
+    served: {
+      type: Boolean,
+      default: false,
+    },
+    queueTime: {
+      type: Number,
+      default: 0,
+    },
   },
   { versionKey: false }
 );
