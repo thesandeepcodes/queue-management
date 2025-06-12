@@ -5,12 +5,12 @@ import { QRCodeCanvas } from "qrcode.react";
 
 export default function Home() {
   return (
-    <main className="relative z-20 flex flex-col items-center justify-center w-full flex-1 px-6 sm:px-20 py-16 text-center min-h-screen">
-      <h1 className="text-5xl font-extrabold text-slate-800 mb-6 tracking-tight drop-shadow-sm">
+    <main className="relative z-20 flex flex-col items-center justify-center w-full flex-1 px-6 sm:px-20 py-16 text-center min-h-screen bg-gray-50">
+      <h1 className="text-5xl font-extrabold text-slate-800 mb-6 tracking-tight leading-tight drop-shadow-sm">
         Welcome to <span className="text-indigo-600">ManageTheQueue</span>
       </h1>
 
-      <p className="mt-3 text-lg text-gray-700 max-w-xl">
+      <p className="mt-3 text-base sm:text-lg text-gray-700 max-w-xl">
         Say goodbye to long lines! Get a virtual ticket and relax while we keep
         your spot.
       </p>
@@ -39,6 +39,7 @@ export default function Home() {
           value="https://example.com/queue/join"
           size={200}
           level="H"
+          aria-label="Join the queue by scanning QR"
           className="mb-4 bg-white p-2 rounded-md"
         />
         <p className="text-gray-600 text-sm">
@@ -47,11 +48,11 @@ export default function Home() {
       </div>
 
       {/* Features */}
-      <div className="mt-12 text-gray-700 space-y-2 max-w-xl text-sm">
-        <p>🔔 Stay informed with live position updates.</p>
-        <p>📱 Receive notifications when your turn is near.</p>
-        <p>🔁 Need to reschedule? Manage your slot online anytime.</p>
-      </div>
+      <ul className="mt-12 text-gray-700 space-y-2 max-w-xl text-sm list-disc text-left">
+        <li>🔔 Stay informed with live position updates.</li>
+        <li>📱 Receive notifications when your turn is near.</li>
+        <li>🔁 Need to reschedule? Manage your slot online anytime.</li>
+      </ul>
     </main>
   );
 }
