@@ -5,7 +5,8 @@ import MainLayout from "@/components/layout/MainLayout";
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`antialiased`}>
+      <body className="antialiased bg-gray-50 text-gray-800">
+
         <QueueProvider>
           <MainLayout>{children}</MainLayout>
         </QueueProvider>
