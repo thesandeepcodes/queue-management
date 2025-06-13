@@ -1,6 +1,9 @@
 export default function Footer() {
   return (
-    <footer className="bg-gray-100 text-center py-6 text-sm text-gray-600 mt-12 border-t">
+    <footer
+      className="bg-gray-100 text-center py-6 text-sm text-gray-600 mt-12 border-t"
+      aria-label="Site Footer"
+    >
       <div className="container mx-auto px-4">
         <p>
           &copy; {new Date().getFullYear()}{" "}
