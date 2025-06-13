@@ -10,16 +10,21 @@ const QueueStatusDisplay = () => {
   };
 
   return (
-    <div className="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4 w-full max-w-md">
-      <h2 className="text-xl font-semibold text-gray-700 mb-4">Current Queue Status Breakdown</h2>
-      <ul>
+    <div className="bg-white shadow-md rounded-xl px-6 py-6 mb-6 w-full max-w-md border border-gray-200">
+      <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
+        📊 Queue Status Breakdown
+      </h2>
+      <ul className="space-y-3">
         {Object.entries(serviceQueueCounts).map(([service, count]) => (
-          <li key={service} className="py-2">
-            <span className="font-semibold">{service}:</span> {count} people waiting
+          <li
+            key={service}
+            className="flex justify-between items-center text-gray-700"
+          >
+            <span className="font-medium">{service}</span>
+            <span className="font-semibold">{count} waiting</span>
           </li>
         ))}
       </ul>
-      {/* You can add more detailed information or UI elements here, such as estimated wait times per service */}
     </div>
   );
 };
