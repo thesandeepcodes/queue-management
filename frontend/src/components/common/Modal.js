@@ -10,7 +10,7 @@ export default function Modal({ open, onClose, title, children }) {
           >
             ×
           </button>
-          {title && <h2 className="text-xl font-bold mb-4">{title}</h2>}
+          {title && <h2 className="text-2xl font-semibold text-gray-800 mb-4">{title}</h2>}
           {children}
         </div>
       </div>
