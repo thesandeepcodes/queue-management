@@ -1,12 +1,16 @@
 import React from 'react';
 
-const EstimatedTime = ({ estimatedTime }) => {
+export default function EstimatedTime({ estimatedTime }) {
+  if (!estimatedTime) return null;
+
   return (
-    <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative mb-4">
-      <strong className="font-bold">Estimated Wait Time:</strong>
-      <span className="block sm:inline ml-2">{estimatedTime}</span>
+    <div
+      role="status"
+      aria-live="polite"
+      className="bg-yellow-50 border border-yellow-400 text-yellow-800 px-4 py-3 rounded-lg mb-4 shadow-sm"
+    >
+      <strong className="font-semibold">Estimated Wait Time:</strong>
+      <span className="ml-2">{estimatedTime}</span>
     </div>
   );
-};
-
-export default EstimatedTime;
+}
