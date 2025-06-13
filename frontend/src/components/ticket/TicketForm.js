@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Input from "../common/Input";
-import Button from "../common/button";
+import Button from "../common/button"; // ✅ small 'b'
 import LoadingSpinner from "../common/LoadingSpinner";
 import axios from "axios";
 
@@ -11,21 +11,23 @@ export default function TicketForm({ onTicketIssued }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    axios.get("/api/services")
-      .then(res => setServices(res.data))
+    axios
+      .get("/api/services")
+      .then((res) => setServices(res.data))
       .catch(() => setServices([]));
   }, []);
 
   useEffect(() => {
     if (form.service) {
-      axios.get(`/api/queue/estimate?service=${form.service}`)
-        .then(res => setWaitTime(res.data.estimatedTime))
+      axios
+        .get(`/api/queue/estimate?service=${form.service}`)
+        .then((res) => setWaitTime(res.data.estimatedTime))
         .catch(() => setWaitTime(null));
     }
   }, [form.service]);
 
   const handleChange = (e) => {
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e) => {
@@ -82,7 +84,12 @@ export default function TicketForm({ onTicketIssued }) {
         </p>
       )}
 
-      {loading ? <LoadingSpinner /> : <Button type="submit">Take Ticket</Button>}
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
+        <Button type="submit">Take Ticket</Button>
+      )}
     </form>
   );
 }
+ 
