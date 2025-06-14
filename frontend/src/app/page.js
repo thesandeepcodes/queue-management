@@ -1,58 +1,44 @@
 "use client";
 
-import Link from "next/link";
-import { QRCodeCanvas } from "qrcode.react";
+import React from "react";
+import { useRouter } from "next/navigation";
 
-export default function Home() {
+export default function HomePage() {
+  const router = useRouter();
+
   return (
-    <main className="relative z-20 flex flex-col items-center justify-center w-full flex-1 px-6 sm:px-20 py-16 text-center min-h-screen bg-gray-50">
-      <h1 className="text-5xl font-extrabold text-slate-800 mb-6 tracking-tight leading-tight drop-shadow-sm">
-        Welcome to <span className="text-indigo-600">ManageTheQueue</span>
+    <main className="min-h-screen flex flex-col items-center justify-center px-4 text-center">
+      <h1 className="text-4xl md:text-5xl font-bold mb-4">
+        Welcome to <span className="text-blue-600">ManageTheQueue</span>
       </h1>
-
-      <p className="mt-3 text-base sm:text-lg text-gray-700 max-w-xl">
-        Say goodbye to long lines! Get a virtual ticket and relax while we keep
-        your spot.
+      <p className="text-gray-600 mb-8">
+        Say goodbye to long lines! Get a virtual ticket and relax while we keep your spot.
       </p>
 
-      {/* Buttons */}
-      <div className="mt-10 flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-6">
-        <Link href="/take-ticket" passHref>
-          <button className="bg-blue-600 hover:bg-blue-700 transition duration-200 text-white font-semibold py-3 px-6 rounded-lg shadow-md">
-            🎟️ Take a Virtual Ticket
-          </button>
-        </Link>
-
-        <Link href="/queue-status" passHref>
-          <button className="bg-green-600 hover:bg-green-700 transition duration-200 text-white font-semibold py-3 px-6 rounded-lg shadow-md">
-            📊 View Queue Status
-          </button>
-        </Link>
+      <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <button
+          onClick={() => router.push("/ticket")}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold shadow"
+        >
+          🎫 Take a Virtual Ticket
+        </button>
+        <button
+          onClick={() => router.push("/queue")}
+          className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow"
+        >
+          📊 View Queue Status
+        </button>
       </div>
 
-      {/* QR Code Section */}
-      <div className="mt-16 flex flex-col items-center justify-center bg-white bg-opacity-80 p-6 rounded-xl backdrop-blur-lg shadow-xl">
-        <h2 className="text-2xl font-semibold text-slate-700 mb-4">
-          Or Scan QR to Join Instantly
-        </h2>
-        <QRCodeCanvas
-          value="https://example.com/queue/join"
-          size={200}
-          level="H"
-          aria-label="Join the queue by scanning QR"
-          className="mb-4 bg-white p-2 rounded-md"
+      <div className="text-center mt-8">
+        <h3 className="text-xl font-semibold mb-2">Or Scan QR to Join Instantly</h3>
+        <img
+          src="/qr.png"
+          alt="Scan QR Code"
+          className="w-40 h-40 mx-auto"
         />
-        <p className="text-gray-600 text-sm">
-          Use your phone camera to jump the hassle.
-        </p>
+        <p className="text-sm text-gray-500 mt-2">Use your phone camera to jump the hassle.</p>
       </div>
-
-      {/* Features */}
-      <ul className="mt-12 text-gray-700 space-y-2 max-w-xl text-sm list-disc text-left">
-        <li>🔔 Stay informed with live position updates.</li>
-        <li>📱 Receive notifications when your turn is near.</li>
-        <li>🔁 Need to reschedule? Manage your slot online anytime.</li>
-      </ul>
     </main>
   );
 }
