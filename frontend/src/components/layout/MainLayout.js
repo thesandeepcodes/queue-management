@@ -6,11 +6,9 @@ import Footer from './Footer';
 export default function MainLayout({ children }) {
   return (
     <div>
-      <Navbar />
-      <main className="min-h-screen px-4 py-8 bg-gray-50">{children}</main>
+      <Navbar /> {/* ✅ Only once */}
+      <main>{children}</main>
       <Footer />
     </div>
   );
 }
-
-
