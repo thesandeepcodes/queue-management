@@ -8,30 +8,10 @@ export default function Navbar() {
           <span className="text-xl font-bold text-primary">ManageTheQueue</span>
         </Link>
         <nav className="space-x-4">
-          <Link
-            href="/take-ticket"
-            className="text-gray-700 hover:text-primary transition-colors duration-200"
-          >
-            Take Ticket
-          </Link>
-          <Link
-            href="/queue-status"
-            className="text-gray-700 hover:text-primary transition-colors duration-200"
-          >
-            Queue Status
-          </Link>
-          <Link
-            href="/reschedule"
-            className="text-gray-700 hover:text-primary transition-colors duration-200"
-          >
-            Reschedule
-          </Link>
-          <Link
-            href="/admin"
-            className="text-gray-700 hover:text-primary transition-colors duration-200"
-          >
-            Admin
-          </Link>
+          <Link href="/take-ticket" className="text-gray-700 hover:text-primary">Take Ticket</Link>
+          <Link href="/queue-status" className="text-gray-700 hover:text-primary">Queue Status</Link>
+          <Link href="/reschedule" className="text-gray-700 hover:text-primary">Reschedule</Link>
+          <Link href="/admin" className="text-gray-700 hover:text-primary">Admin</Link>
         </nav>
       </div>
     </header>
