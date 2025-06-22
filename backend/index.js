@@ -4,12 +4,20 @@ import HTTP from "./src/lib/HTTP.js";
 import createResponse from "./src/lib/Response.js";
 import { config } from "dotenv";
 import connectDB from "./src/config/db.js";
+import cors from "cors";
 
 config();
 connectDB();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(
+  cors({
+    origin: process.env.ALLOWED_ORIGIN,
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 

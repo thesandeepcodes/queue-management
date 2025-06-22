@@ -64,6 +64,24 @@ Logs in an admin.
 
 ---
 
+### `POST /auth/logout`
+
+Logs out an admin.
+
+**Response:**
+
+```json
+{
+  "status": "success",
+  "message": "Logout successful"
+}
+```
+
+**Status Codes:**
+`200 OK`
+
+---
+
 ### `GET /auth/me`
 
 Fetches the current logged-in user's details using the provided token.
