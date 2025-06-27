@@ -12,7 +12,7 @@ import useSocket from "@/hooks/useSocket";
 import { formatDate, formatTimeDuration, timeAgo } from "@/lib/client/date";
 import Link from "next/link";
 import { Children, createRef, use, useEffect, useMemo, useRef, useState } from "react";
-import { FiCheck, FiChevronDown, FiChevronUp, FiClock, FiEdit, FiEdit2, FiFlag, FiLoader, FiMail, FiPhone, FiRepeat, FiTrash2, FiUser } from "react-icons/fi";
+import { FiArrowLeft, FiArrowRight, FiCheck, FiChevronDown, FiChevronUp, FiClock, FiEdit, FiEdit2, FiFlag, FiInfo, FiLoader, FiMail, FiPhone, FiRepeat, FiTrash2, FiUser } from "react-icons/fi";
 import { twMerge } from "tailwind-merge";
 
 const calculateBoundingBoxes = (children) => {
@@ -121,6 +121,20 @@ export default function ManageEvent({ params }) {
         })
     }, false)
 
+    const [updatePositionInfo, setUpdatePositionInfo] = useState({
+        current: event?.currentPosition,
+        magnitude: 0,
+    });
+
+    const { loading: updatingCurrentPosition, error: updateCurrentPositionError, setError: setUpdateCurrentPositionError, refetch: updateCurrentPosition } = useFetch(`/events/${eventId}`, {
+        method: "PUT",
+        body: JSON.stringify({
+            currentPosition: event?.currentPosition + updatePositionInfo.magnitude
+        })
+    }, false, (r) => {
+        console.log(r);
+    })
+
     const listeners = useMemo(() => [
         {
             event: "event:updated",
@@ -182,6 +196,12 @@ export default function ManageEvent({ params }) {
 
 
     const savePositionsTimeout = useRef(null);
+
+    useEffect(() => {
+        if (updatePositionInfo.magnitude !== 0) {
+            updateCurrentPosition();
+        }
+    }, [updatePositionInfo])
 
     useEffect(() => {
         if (queues.length > 1 && Object.keys(newQueuePositions).length > 0) {
@@ -259,7 +279,17 @@ export default function ManageEvent({ params }) {
         setQueues(newUsers);
     };
 
-    console.log(event);
+    if (eventError?.show) {
+        return (
+            <div className="h-full flex flex-col items-center justify-center gap-4">
+                <div className="flex items-center gap-2">
+                    <FiInfo className="w-5 h-5 text-red-500" />
+                    <div className="text-center font-bold text-lg text-red-500">{eventError.message}</div>
+                </div>
+                <div className="text-center text-neutral-400">You can not access this event. Go back and try again.</div>
+            </div>
+        )
+    }
 
     return (
         initialLoading ? (
@@ -411,6 +441,12 @@ export default function ManageEvent({ params }) {
                                                 <span>Delete</span>
                                             </Button>
                                         </DeleteGuestButton>
+
+                                        <div className="flex-1 flex gap-2 items-center justify-end">
+                                            <Button onClick={() => setUpdatePositionInfo({ current: event?.currentPosition, magnitude: -1 })} disabled={event?.currentPosition <= 0 || updatingCurrentPosition} className="bg-neutral-800 hover:bg-neutral-700"><FiArrowLeft /></Button>
+
+                                            <Button onClick={() => setUpdatePositionInfo({ current: event?.currentPosition, magnitude: 1 })} disabled={event?.currentPosition >= event?.queues?.length - 1 || updatingCurrentPosition} className="bg-neutral-800 hover:bg-neutral-700"><FiArrowRight /></Button>
+                                        </div>
                                     </div>
                                 )
                             }

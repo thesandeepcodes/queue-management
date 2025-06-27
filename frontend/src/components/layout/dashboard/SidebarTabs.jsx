@@ -7,7 +7,7 @@ export default function DashboardSidebarTabs() {
     const { tab, tabs } = useDashboard();
 
     return (
-        <div className="flex flex-col mt-8">
+        <div className="flex flex-col gap-3 mt-8">
             {tabs.map((tabItem) => (
                 <Link
                     href={`/dashboard/${tabItem.name}`}

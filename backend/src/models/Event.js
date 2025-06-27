@@ -12,6 +12,12 @@ const eventSchema = new mongoose.Schema(
     eventDate: { type: Date, required: true },
     maxAttendees: { type: Number, required: true, default: 0 },
     completed: { type: Boolean, default: false },
+    eventStartTime: { type: Date, default: Date.now },
+    eventEndTime: { type: Date, default: Date.now },
+    venue: {
+      type: String,
+      default: "",
+    },
     queues: [
       {
         type: mongoose.Schema.Types.ObjectId,

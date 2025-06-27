@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { FiCalendar } from "react-icons/fi";
+import { FiBell, FiCalendar } from "react-icons/fi";
 
 const { createContext, useContext, useState, useEffect } = require("react");
 
@@ -18,6 +18,13 @@ export const DashboardProvider = ({ children }) => {
             tabTitle: "Manage Events",
             tabDes: "Manage your events and their settings."
         },
+        {
+            name: "notifications",
+            icon: <FiBell className="w-5 h-5" />,
+            title: "Notifications",
+            tabTitle: "Manage Notifications",
+            tabDes: "Manage your notifications and their settings."
+        }
     ];
 
     const pathname = usePathname();

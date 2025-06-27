@@ -1,10 +1,10 @@
 import { twMerge } from "tailwind-merge";
 
-export default function EventStatus({ event }) {
+export default function EventStatus({ event, className }) {
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
 
-    const isUpcoming = new Date(event.eventDate) > today;
+    const isUpcoming = new Date(event?.eventDate) > today;
     const isCompleted = event?.completed;
 
     let statusText = "Ongoing";
@@ -20,8 +20,9 @@ export default function EventStatus({ event }) {
 
     return (
         <span className={twMerge(
-            "p-1 px-3 border mt-1 rounded-full text-xs font-bold",
-            statusClasses
+            "p-1 px-3 border rounded-full text-xs font-bold",
+            statusClasses,
+            className
         )}>
             {statusText}
         </span>

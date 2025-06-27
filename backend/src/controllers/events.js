@@ -121,6 +121,9 @@ export async function updateEvent(req, res, next) {
         currentPosition: event.currentPosition,
         additionalInfo: event.additionalInfo,
         completed: event.completed,
+        eventStartTime: event.eventStartTime,
+        eventEndTime: event.eventEndTime,
+        venue: event.venue,
       })
     );
   } catch (e) {

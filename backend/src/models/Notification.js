@@ -16,6 +16,22 @@ const notificationSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    sendTo: {
+      type: String,
+      required: true,
+    },
+    type: {
+      type: String,
+      required: true,
+    },
+    startTime: {
+      type: Date,
+      required: true,
+    },
+    endTime: {
+      type: Date,
+      required: true,
+    },
   },
   { timestamps: true, versionKey: false }
 );

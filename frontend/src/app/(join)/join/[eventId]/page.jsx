@@ -2,10 +2,12 @@
 
 import Button from "@/components/base/Button";
 import Input from "@/components/base/Input";
+import EventStatus from "@/components/layout/dashboard/EventStatus";
 import { useFetch } from "@/hooks/useFetch";
-import { formatDate } from "@/lib/client/date";
+import useSocket from "@/hooks/useSocket";
+import { formatDate, isSameOrAfter } from "@/lib/client/date";
 import { useRouter } from "next/navigation";
-import { use, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { use, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { FiArrowLeft, FiCalendar, FiClock, FiLoader, FiLogIn, FiLogOut, FiMap } from "react-icons/fi";
 import { IoInformationCircle } from "react-icons/io5";
 import { toast, ToastContainer } from "react-toastify";
@@ -49,9 +51,26 @@ export default function JoinEvent({ params }) {
 
     const [joined, setJoined] = useState(false);
 
-    const event = data?.data;
+    const [event, setEvent] = useState({});
 
     const router = useRouter();
+
+    const listeners = useMemo(() => [
+        {
+            event: "event:updated",
+            listener: (data) => {
+                setEvent(data);
+            }
+        }
+    ], []);
+
+    useSocket(listeners, { eventId });
+
+    useEffect(() => {
+        if (data?.data) {
+            setEvent(data.data);
+        }
+    }, [data]);
 
     useEffect(() => {
         if (pageWrapper.current) {
@@ -127,6 +146,29 @@ export default function JoinEvent({ params }) {
         refetch();
     }
 
+    let eventStartTime = null;
+    let eventEndTime = null;
+
+    try {
+        const eventStartDate = new Date(event?.eventStartTime);
+        const eventEndDate = new Date(event?.eventEndTime);
+
+        if (eventStartDate.getDate() === eventEndDate.getDate()) {
+            eventStartTime = eventStartDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+            eventEndTime = eventEndDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        } else {
+            eventStartTime = eventStartDate.toLocaleDateString([], { day: "2-digit", month: "2-digit", year: "numeric" });
+            eventEndTime = eventEndDate.toLocaleDateString([], { day: "2-digit", month: "2-digit", year: "numeric" });
+        }
+
+        if (eventStartTime === eventEndTime) {
+            eventStartTime = eventStartDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+            eventEndTime = "To Be Announced";
+        }
+    } catch (e) {
+
+    }
+
     return loading ? (
         <div className="w-full h-screen mx-auto flex items-center justify-center">
             <FiLoader className="w-8 h-8 animate-spin text-neutral-500" />
@@ -143,7 +185,7 @@ export default function JoinEvent({ params }) {
     ) : (
         <div className="w-full h-screen mx-auto">
             <div className="w-full md:p-10 p-4 bg-neutral-900">
-                <div className="text-2xl font-bold mb-4">{event?.name}</div>
+                <div className="text-2xl font-bold mb-4">{event?.name} <EventStatus className={`relative bottom-1 left-1 inline-block`} event={event} /></div>
                 <div className="text-md text-neutral-400">{event?.description}</div>
 
                 <div className="grid grid-cols-2 gap-6 mt-10">
@@ -175,7 +217,11 @@ export default function JoinEvent({ params }) {
                             <div className="bg-neutral-800 p-2 rounded-full text-primary">
                                 <FiClock />
                             </div>
-                            <span className="text-neutral-300 text-md">{event?.eventTime || "To Be Announced"}</span>
+                            <span className="text-neutral-300 text-md">
+                                <span>{eventStartTime}</span>
+                                <span className="text-neutral-400 px-3">-</span>
+                                <span>{eventEndTime}</span>
+                            </span>
                         </div>
 
                         <div className="flex items-center space-x-3">
@@ -217,111 +263,117 @@ export default function JoinEvent({ params }) {
                                     }
                                 </div>
 
-                                <div className="mt-10">
-                                    <Button onClick={() => setPage(2)} className={"md:w-auto w-full justify-center items-center py-3 px-4"}>
-                                        <span>Register for this Event</span>
-                                    </Button>
-                                </div>
+                                {
+                                    isSameOrAfter(new Date(), new Date(event?.eventDate)) &&
+                                    <div className="mt-10">
+                                        <Button onClick={() => setPage(2)} className={"md:w-auto w-full justify-center items-center py-3 px-4"}>
+                                            <span>Register for this Event</span>
+                                        </Button>
+                                    </div>
+                                }
                             </div>
 
-                            <form onSubmit={handleSubmit} className="min-w-full p-1">
-                                <div className="md:grid flex flex-col md:grid-cols-3 md:gap-4 gap-8">
-                                    <div>
-                                        <label className="text-neutral-300 text-md mb-4 inline-block">Full Name <span className="text-red-500">*</span></label>
+                            {
+                                isSameOrAfter(new Date(), new Date(event?.eventDate)) &&
+                                <form onSubmit={handleSubmit} className="min-w-full p-1">
+                                    <div className="md:grid flex flex-col md:grid-cols-3 md:gap-4 gap-8">
+                                        <div>
+                                            <label className="text-neutral-300 text-md mb-4 inline-block">Full Name <span className="text-red-500">*</span></label>
 
-                                        <Input
-                                            placeholder={"Full Name"}
-                                            type="text"
-                                            value={name}
-                                            disabled={joining}
-                                            required
-                                            onChange={(e) => setName(e.target.value)}
-                                        />
+                                            <Input
+                                                placeholder={"Full Name"}
+                                                type="text"
+                                                value={name}
+                                                disabled={joining}
+                                                required
+                                                onChange={(e) => setName(e.target.value)}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="text-neutral-300 text-md mb-4 inline-block">Mobile Number <span className="text-red-500">*</span></label>
+
+                                            <Input
+                                                placeholder={"Mobile Number"}
+                                                type="number"
+                                                value={mobile}
+                                                disabled={joining}
+                                                required
+                                                onChange={(e) => setMobile(e.target.value)}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="text-neutral-300 text-md mb-4 inline-block">Email</label>
+
+                                            <Input
+                                                placeholder={"Email"}
+                                                type="email"
+                                                value={email}
+                                                disabled={joining}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                            />
+                                        </div>
+
+                                        {
+                                            (event?.additionalInfo || []).length > 0 && (
+                                                <>
+                                                    <div className="col-span-3 w-full h-0.5 bg-gradient-to-r from-transparent via-neutral-800 to-transparent mt-4"></div>
+
+                                                    {
+                                                        (event?.additionalInfo || []).map((item, index) => (
+                                                            <div key={index}>
+                                                                <label className="text-neutral-300 text-md mb-4 inline-block">{item.name} {item.required && <span className="text-red-500">*</span>}</label>
+
+                                                                <Input
+                                                                    disabled={joining}
+                                                                    type="string"
+                                                                    required={item.required}
+                                                                    placeholder={item.name}
+                                                                    value={additionalInfo[index]?.name || ""}
+                                                                    onChange={(e) => setAdditionalInfo(additionalInfo.map((info, infoIndex) => infoIndex === index ? { name: e.target.value } : info))}
+                                                                />
+                                                            </div>
+                                                        ))
+                                                    }
+                                                </>
+                                            )
+                                        }
                                     </div>
 
-                                    <div>
-                                        <label className="text-neutral-300 text-md mb-4 inline-block">Mobile Number <span className="text-red-500">*</span></label>
-
-                                        <Input
-                                            placeholder={"Mobile Number"}
-                                            type="number"
-                                            value={mobile}
-                                            disabled={joining}
-                                            required
-                                            onChange={(e) => setMobile(e.target.value)}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="text-neutral-300 text-md mb-4 inline-block">Email</label>
-
-                                        <Input
-                                            placeholder={"Email"}
-                                            type="email"
-                                            value={email}
-                                            disabled={joining}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                        />
-                                    </div>
+                                    {/* Error */}
+                                    {
+                                        joinError.show &&
+                                        <div className="p-3 mt-8 text-sm text-red-400 items-start gap-2 bg-red-950 rounded-md flex">
+                                            <IoInformationCircle className='w-5 h-5 mt-[1px]' />
+                                            <span>{joinError?.message} {joinError?.object?.[0]?.message ? `: ${joinError?.object?.[0]?.message}` : ''}</span>
+                                        </div>
+                                    }
 
                                     {
-                                        (event?.additionalInfo || []).length > 0 && (
-                                            <>
-                                                <div className="col-span-3 w-full h-0.5 bg-gradient-to-r from-transparent via-neutral-800 to-transparent mt-4"></div>
-
-                                                {
-                                                    (event?.additionalInfo || []).map((item, index) => (
-                                                        <div key={index}>
-                                                            <label className="text-neutral-300 text-md mb-4 inline-block">{item.name} {item.required && <span className="text-red-500">*</span>}</label>
-
-                                                            <Input
-                                                                disabled={joining}
-                                                                type="string"
-                                                                required={item.required}
-                                                                placeholder={item.name}
-                                                                value={additionalInfo[index]?.name || ""}
-                                                                onChange={(e) => setAdditionalInfo(additionalInfo.map((info, infoIndex) => infoIndex === index ? { name: e.target.value } : info))}
-                                                            />
-                                                        </div>
-                                                    ))
-                                                }
-                                            </>
-                                        )
+                                        !joinError.show && joinData?.status === "success" &&
+                                        <div className="p-3 mt-8 text-sm text-green-400 items-start gap-2 bg-green-950 rounded-md flex">
+                                            <IoInformationCircle className='w-5 h-5 mt-[1px]' />
+                                            <span>{joinData?.message}</span>
+                                        </div>
                                     }
-                                </div>
 
-                                {/* Error */}
-                                {
-                                    joinError.show &&
-                                    <div className="p-3 mt-8 text-sm text-red-400 items-start gap-2 bg-red-950 rounded-md flex">
-                                        <IoInformationCircle className='w-5 h-5 mt-[1px]' />
-                                        <span>{joinError?.message} {joinError?.object?.[0]?.message ? `: ${joinError?.object?.[0]?.message}` : ''}</span>
+                                    <div className="mt-10 flex items-center gap-3">
+                                        <Button disabled={joining} className="py-3 px-4" type="submit">
+                                            {
+                                                joining ? <FiLoader className="animate-spin" /> : <FiLogIn />
+                                            }
+
+                                            <span>Join this Event</span>
+                                        </Button>
+
+                                        <Button disabled={joining} type="button" onClick={() => setPage(1)} className="bg-neutral-700 hover:bg-neutral-600 py-3 px-4">
+                                            <FiArrowLeft />
+                                            <span>Go Back</span>
+                                        </Button>
                                     </div>
-                                }
-
-                                {
-                                    !joinError.show && joinData?.status === "success" &&
-                                    <div className="p-3 mt-8 text-sm text-green-400 items-start gap-2 bg-green-950 rounded-md flex">
-                                        <IoInformationCircle className='w-5 h-5 mt-[1px]' />
-                                        <span>{joinData?.message}</span>
-                                    </div>
-                                }
-
-                                <div className="mt-10 flex items-center gap-3">
-                                    <Button disabled={joining} className="py-3 px-4" type="submit">
-                                        {
-                                            joining ? <FiLoader className="animate-spin" /> : <FiLogIn />
-                                        }
-
-                                        <span>Join this Event</span>
-                                    </Button>
-
-                                    <Button disabled={joining} type="button" onClick={() => setPage(1)} className="bg-neutral-700 hover:bg-neutral-600 py-3 px-4">
-                                        <FiArrowLeft />
-                                        <span>Go Back</span>
-                                    </Button>
-                                </div>
-                            </form>
+                                </form>
+                            }
                         </div>
                     }
 

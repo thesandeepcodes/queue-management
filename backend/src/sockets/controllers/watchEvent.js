@@ -31,5 +31,7 @@ export default function watchEvent(socket) {
     }
   });
 
+  cs.on("error", (error) => socket.emit("event:error", error));
+
   socket.on("disconnect", () => cs.close());
 }

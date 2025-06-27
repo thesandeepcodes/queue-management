@@ -17,6 +17,10 @@ export default function CreateEvent() {
     const [maxAttendees, setMaxAttendees] = useState("");
     const [additionalInfo, setAdditionalInfo] = useState([]);
 
+    const [eventStartTime, setEventStartTime] = useState("");
+    const [eventEndTime, setEventEndTime] = useState("");
+    const [venue, setVenue] = useState("");
+
     const { data, setData, loading, error, setError, refetch } = useFetch('/events/create', {
         method: "POST",
         body: JSON.stringify({
@@ -24,7 +28,10 @@ export default function CreateEvent() {
             description: description,
             eventDate: eventDate,
             maxAttendees: Number(maxAttendees) || 0,
-            additionalInfo: additionalInfo.filter(info => info.name.trim() !== '')
+            additionalInfo: additionalInfo.filter(info => info.name.trim() !== ''),
+            eventStartTime: eventStartTime || new Date().toISOString(),
+            eventEndTime: eventEndTime || new Date().toISOString(),
+            venue: venue
         })
     }, false);
 
@@ -93,6 +100,42 @@ export default function CreateEvent() {
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Event Description"
                     />
+                </div>
+
+                <div className="h-[1px] mt-10 w-full bg-gradient-to-r from-transparent via-neutral-700 to-transparent text-center">
+                    <span className="relative bottom-3 bg-background px-3 text-neutral-400">Optional</span>
+                </div>
+
+                <div className="mt-12 mb-10 grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block mb-3 text-neutral-500 text-sm">Start Time</label>
+                        <Input
+                            type="datetime-local"
+                            disabled={loading}
+                            value={eventStartTime}
+                            onChange={(e) => setEventStartTime(e.target.value)}
+                            iconLeft={<FiInfo className="w-4.5 h-4.5" />}
+                            placeholder="Event Start Time" />
+                    </div>
+
+                    <div>
+                        <label className="block mb-3 text-neutral-500 text-sm">End Time</label>
+                        <Input
+                            type="datetime-local"
+                            disabled={loading}
+                            value={eventEndTime}
+                            onChange={(e) => setEventEndTime(e.target.value)}
+                            iconLeft={<FiInfo className="w-4.5 h-4.5" />}
+                            placeholder="Event End Time" />
+                    </div>
+
+                    <Input
+                        type="text"
+                        disabled={loading}
+                        value={venue}
+                        onChange={(e) => setVenue(e.target.value)}
+                        iconLeft={<FiInfo className="w-4.5 h-4.5" />}
+                        placeholder="Venue" />
                 </div>
 
                 <div className="bg-neutral-900 rounded-md p-4 mt-4">

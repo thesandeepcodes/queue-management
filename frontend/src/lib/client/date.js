@@ -88,11 +88,11 @@ export function timeAgo(date) {
   const diff = (new Date().getTime() - new Date(date).getTime()) / 1000;
 
   const units = [
-    { name: "year", seconds: 60 * 60 * 24 * 365 },
-    { name: "month", seconds: 60 * 60 * 24 * 30 },
-    { name: "day", seconds: 60 * 60 * 24 },
-    { name: "hour", seconds: 60 * 60 },
-    { name: "minute", seconds: 60 },
+    { name: "y", seconds: 60 * 60 * 24 * 365 },
+    { name: "m", seconds: 60 * 60 * 24 * 30 },
+    { name: "d", seconds: 60 * 60 * 24 },
+    { name: "hr", seconds: 60 * 60 },
+    { name: "min", seconds: 60 },
   ];
 
   for (const unit of units) {
@@ -192,5 +192,22 @@ export function formatTimeDuration(duration) {
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
-  return `${hours > 0 ? `${hours}h ` : ""}${minutes}m ${seconds}s`;
+
+  return `${hours > 0 ? `${hours}h ` : ""}${
+    minutes > 0 ? `${minutes}m ` : ""
+  }${seconds}s`;
+}
+
+export function isSameOrAfter(date1, date2) {
+  const d1 = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate());
+  const d2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate());
+
+  return d1.getTime() >= d2.getTime();
+}
+
+export function isAfter(date1, date2) {
+  const d1 = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate());
+  const d2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate());
+
+  return d1.getTime() > d2.getTime();
 }

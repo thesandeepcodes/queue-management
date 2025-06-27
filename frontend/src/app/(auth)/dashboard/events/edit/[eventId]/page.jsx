@@ -22,6 +22,10 @@ export default function EditEvent({ params }) {
     const [currentPosition, setCurrentPosition] = useState(0);
     const [additionalInfo, setAdditionalInfo] = useState([]);
 
+    const [eventStartTime, setEventStartTime] = useState("");
+    const [eventEndTime, setEventEndTime] = useState("");
+    const [venue, setVenue] = useState("");
+
     const { data, loading, error, setError, refetch } = useFetch(`/events/${eventId}`, {
         method: "PUT",
         body: JSON.stringify({
@@ -30,7 +34,10 @@ export default function EditEvent({ params }) {
             eventDate: eventDate,
             currentPosition: Number(currentPosition) || 0,
             maxAttendees: Number(maxAttendees) || 0,
-            additionalInfo: additionalInfo.filter(info => info.name.trim() !== '')
+            additionalInfo: additionalInfo.filter(info => info.name.trim() !== ''),
+            eventStartTime: eventStartTime || new Date().toISOString(),
+            eventEndTime: eventEndTime || new Date().toISOString(),
+            venue: venue
         })
     }, false);
 
@@ -48,7 +55,7 @@ export default function EditEvent({ params }) {
         }
 
         const previousData = eventData.data;
-        const updatedData = { ...previousData, name, description, eventDate: new Date(eventDate), maxAttendees: Number(maxAttendees) || 0, currentPosition, additionalInfo };
+        const updatedData = { ...previousData, name, description, eventDate: new Date(eventDate), maxAttendees: Number(maxAttendees) || 0, currentPosition, additionalInfo, eventStartTime: new Date(eventStartTime), eventEndTime: new Date(eventEndTime), venue };
 
         if (JSON.stringify(previousData) === JSON.stringify(updatedData)) {
             setError({ show: true, message: "No changes detected." });
@@ -72,8 +79,24 @@ export default function EditEvent({ params }) {
             setMaxAttendees(eventData.data.maxAttendees > 0 ? eventData.data.maxAttendees : '');
             setAdditionalInfo(eventData.data.additionalInfo || []);
             setCurrentPosition(eventData.data.currentPosition);
+
+            setEventStartTime(eventData.data.eventStartTime);
+            setEventEndTime(eventData.data.eventEndTime);
+            setVenue(eventData.data.venue);
         }
     }, [eventData]);
+
+    if (eventError?.show) {
+        return (
+            <div className="h-full flex flex-col items-center justify-center gap-4">
+                <div className="flex items-center gap-2">
+                    <FiInfo className="w-5 h-5 text-red-500" />
+                    <div className="text-center font-bold text-lg text-red-500">{eventError.message}</div>
+                </div>
+                <div className="text-center text-neutral-400">You can not edit this event. Go back and try again.</div>
+            </div>
+        )
+    }
 
     return (
         <div>
@@ -132,6 +155,42 @@ export default function EditEvent({ params }) {
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Event Description"
                     />
+                </div>
+
+                <div className="h-[1px] mt-10 w-full bg-gradient-to-r from-transparent via-neutral-700 to-transparent text-center">
+                    <span className="relative bottom-3 bg-background px-3 text-neutral-400">Optional</span>
+                </div>
+
+                <div className="mt-12 mb-10 grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block mb-3 text-neutral-500 text-sm">Start Time</label>
+                        <Input
+                            type="datetime-local"
+                            disabled={loading}
+                            value={formatDate(eventStartTime, "yyyy-MM-ddTHH:mm:ss")}
+                            onChange={(e) => setEventStartTime(e.target.value)}
+                            iconLeft={<FiInfo className="w-4.5 h-4.5" />}
+                            placeholder="Event Start Time" />
+                    </div>
+
+                    <div>
+                        <label className="block mb-3 text-neutral-500 text-sm">End Time</label>
+                        <Input
+                            type="datetime-local"
+                            disabled={loading}
+                            value={formatDate(eventEndTime, "yyyy-MM-ddTHH:mm:ss")}
+                            onChange={(e) => setEventEndTime(e.target.value)}
+                            iconLeft={<FiInfo className="w-4.5 h-4.5" />}
+                            placeholder="Event End Time" />
+                    </div>
+
+                    <Input
+                        type="text"
+                        disabled={loading}
+                        value={venue}
+                        onChange={(e) => setVenue(e.target.value)}
+                        iconLeft={<FiInfo className="w-4.5 h-4.5" />}
+                        placeholder="Venue" />
                 </div>
 
                 <div className="bg-neutral-900 rounded-md p-4 mt-4">

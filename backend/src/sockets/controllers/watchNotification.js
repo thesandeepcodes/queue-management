@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
-import Queue from "../../models/Queue.js";
+import Notification from "../../models/Notification.js";
 
-export default function watchQueues(socket) {
+export default function watchNotification(socket) {
   const { eventId } = socket.handshake.query;
 
   if (!mongoose.isValidObjectId(eventId)) {
-    socket.emit("queues:error", "Invalid event ID");
+    socket.emit("notification:error", "Invalid event ID");
     return;
   }
 
@@ -17,7 +17,7 @@ export default function watchQueues(socket) {
     },
   ];
 
-  const cs = Queue.watch(pipeline, { fullDocument: "updateLookup" });
+  const cs = Notification.watch(pipeline, { fullDocument: "updateLookup" });
 
   cs.on("change", (change) => {
     const doc = change.fullDocument;
@@ -25,17 +25,17 @@ export default function watchQueues(socket) {
     const docEventId = doc?.event?.toString();
 
     if (change.operationType === "insert" && docEventId === eventId) {
-      socket.emit("queues:added", doc);
+      socket.emit("notification:added", doc);
     } else if (change.operationType === "update" && docEventId === eventId) {
-      socket.emit("queues:updated", doc);
+      socket.emit("notification:updated", doc);
     } else if (change.operationType === "replace" && docEventId === eventId) {
-      socket.emit("queues:updated", doc);
+      socket.emit("notification:updated", doc);
     } else if (change.operationType === "delete") {
-      socket.emit("queues:deleted", { _id: change.documentKey._id });
+      socket.emit("notification:deleted", { _id: change.documentKey._id });
     }
   });
 
-  cs.on("error", (error) => socket.emit("queues:error", error));
+  cs.on("error", (error) => socket.emit("notification:error", error));
 
   socket.on("disconnect", () => cs.close());
 }
