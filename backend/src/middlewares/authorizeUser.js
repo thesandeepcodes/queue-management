@@ -5,16 +5,23 @@ import createResponse from "../lib/Response.js";
 
 export default function authorizeUser(req, res, next) {
   try {
-    const authorization = req.headers.authorization;
+    const cookieName =
+      process.env.NODE_ENV == "production" ? "__Secure-Token" : "_Secure-Token";
 
-    if (!authorization || !authorization.startsWith("Bearer ")) {
-      throw new AppError(
-        HTTP.UNAUTHORIZED,
-        createResponse(false, "Unauthorized: Authorization token is missing")
-      );
+    let token = req.cookies[cookieName];
+
+    if (!token) {
+      const authorization = req.headers.authorization;
+
+      if (!authorization || !authorization.startsWith("Bearer ")) {
+        throw new AppError(
+          HTTP.UNAUTHORIZED,
+          createResponse(false, "Unauthorized: Authorization token is missing")
+        );
+      }
+
+      token = authorization.split(" ")[1];
     }
-
-    const token = authorization.split(" ")[1];
 
     if (!token) {
       throw new AppError(

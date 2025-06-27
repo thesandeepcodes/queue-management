@@ -24,7 +24,10 @@ export async function createEvent(req, res, next) {
         _id: event._id,
         name: event.name,
         description: event.description,
+        maxAttendees: event.maxAttendees,
+        eventDate: event.eventDate,
         createdBy: event.createdBy,
+        completed: event.completed,
       })
     );
   } catch (error) {
@@ -113,7 +116,11 @@ export async function updateEvent(req, res, next) {
         _id: event._id,
         name: event.name,
         description: event.description,
+        maxAttendees: event.maxAttendees,
+        eventDate: event.eventDate,
         currentPosition: event.currentPosition,
+        additionalInfo: event.additionalInfo,
+        completed: event.completed,
       })
     );
   } catch (e) {

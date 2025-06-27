@@ -26,7 +26,7 @@ v1Routes.get("/", (req, res) => {
 
 // Routes
 v1Routes.use("/auth", authRoutes);
-v1Routes.use("/events", authorizeUser, eventRoutes);
+v1Routes.use("/events", eventRoutes);
 v1Routes.use("/qr", qrRoutes);
 v1Routes.use("/guests", guestRoutes);
 v1Routes.use("/queue", queueRoutes);

@@ -31,7 +31,6 @@ export async function getQueue(req, res, next) {
     return res.json(
       createResponse(true, "Queues fetched successfully", {
         queues: queues
-          .filter((it) => !it.served)
           .map((queue) => ({
             ...queue.toObject(),
             position: event.queues.indexOf(queue._id),
@@ -58,7 +57,7 @@ export async function moveQueue(req, res, next) {
     const result = moveQueueSchema.safeParse(req.body);
     if (!result.success) throw result.error;
 
-    const { guestId, newPosition } = result.data;
+    const { positions } = result.data;
 
     const event = await Event.findById(eventId);
 
@@ -69,28 +68,27 @@ export async function moveQueue(req, res, next) {
       );
     }
 
-    if (event.queues.indexOf(guestId) === -1) {
-      throw new AppError(
-        HTTP.BAD_REQUEST,
-        createResponse(false, "Guest not found in event")
-      );
+    function applyPositionsMap(array, positions) {
+      const newQueues = [...array];
+
+      for (const from in positions) {
+        const to = positions[from];
+
+        newQueues.splice(to, 0, newQueues.splice(from, 1)[0]);
+      }
+
+      return newQueues;
     }
 
-    if (newPosition < event.currentPosition) {
-      throw new AppError(
-        HTTP.BAD_REQUEST,
-        createResponse(
-          false,
-          "New position must be greater than current position of the event"
-        )
-      );
-    }
-
-    event.queues.splice(event.queues.indexOf(guestId), 1);
-    event.queues.splice(newPosition, 0, guestId);
+    event.queues = applyPositionsMap(event.queues, positions);
     await event.save();
 
-    return res.json(createResponse(true, "Guest moved in queue"));
+    return res.json(
+      createResponse(true, "Guest moved in queue", {
+        queues: event.queues,
+        positions,
+      })
+    );
   } catch (e) {
     next(e);
   }
@@ -143,12 +141,21 @@ export async function serveQueue(req, res, next) {
       );
     }
 
-    event.queues.splice(guestIndex, 1);
     queue.served = true;
     queue.queueTime = Date.now() - queue.joinedAt.getTime();
 
-    await Promise.all([event.save(), queue.save()]);
+    event.currentPosition = guestIndex + 1;
 
+    if (event.currentPosition > event.queues.length - 1) {
+      if (event.queues.length > 1) {
+        event.currentPosition = event.queues.length - 1;
+      } else {
+        event.currentPosition = 0;
+      }
+    }
+
+    await event.save();
+    await queue.save();
     return res.json(createResponse(true, "Guest marked as served"));
   } catch (e) {
     next(e);
@@ -203,6 +210,14 @@ export async function deleteQueue(req, res, next) {
     }
 
     event.queues.splice(guestIndex, 1);
+
+    if (event.currentPosition > event.queues.length - 1) {
+      if (event.queues.length > 1) {
+        event.currentPosition = event.queues.length - 1;
+      } else {
+        event.currentPosition = 0;
+      }
+    }
 
     await Promise.all([event.save(), queue.deleteOne()]);
 

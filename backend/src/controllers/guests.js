@@ -59,6 +59,29 @@ export async function joinQueue(req, res, next) {
       );
     }
 
+    if (event?.completed) {
+      throw new AppError(
+        HTTP.BAD_REQUEST,
+        createResponse(
+          false,
+          "The event has already ended. No further guests can join. Please contact the administrator."
+        )
+      );
+    }
+
+    if (
+      event?.maxAttendees === event?.queues.length &&
+      event?.queues.length > 0
+    ) {
+      throw new AppError(
+        HTTP.BAD_REQUEST,
+        createResponse(
+          false,
+          "The event is full. No further guests can join. Please contact the administrator."
+        )
+      );
+    }
+
     const queue = await Queue.create({
       ...result.data,
       event: event._id,
@@ -107,11 +130,21 @@ export async function leaveQueue(req, res, next) {
     }
 
     const event = await Event.findById(eventId);
-    console.log(event);
+
     if (!event) {
       throw new AppError(
         HTTP.NOT_FOUND,
         createResponse(false, "Event not found")
+      );
+    }
+
+    if (event?.completed) {
+      throw new AppError(
+        HTTP.BAD_REQUEST,
+        createResponse(
+          false,
+          "The event has been completed. No further guests can leave. Please contact the administrator."
+        )
       );
     }
 
@@ -124,6 +157,15 @@ export async function leaveQueue(req, res, next) {
     }
 
     event.queues = event.queues.filter((id) => !id.equals(queue._id));
+
+    if (event.currentPosition > event.queues.length - 1) {
+      if (event.queues.length > 1) {
+        event.currentPosition = event.queues.length - 1;
+      } else {
+        event.currentPosition = 0;
+      }
+    }
+
     await event.save();
 
     await Queue.findByIdAndDelete(guestId);

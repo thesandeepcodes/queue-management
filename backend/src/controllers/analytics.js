@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import Event from "../models/Event.js";
-import Queue from "../models/Queue.js";
 import createResponse from "../lib/Response.js";
 import HTTP from "../lib/HTTP.js";
 import AppError from "../errors/AppError.js";
+import getAnalytics from "./getAnalytics.js";
 
 async function computeEventAnalytics(eventId) {
   if (!mongoose.isValidObjectId(eventId)) {
@@ -21,36 +21,7 @@ async function computeEventAnalytics(eventId) {
     );
   }
 
-  const totalQueues = await Queue.countDocuments({
-    event: new mongoose.Types.ObjectId(event._id),
-  });
-
-  const servedQueues = await Queue.countDocuments({
-    _id: { $in: event.queues },
-    served: true,
-  });
-
-  const averageQueueTime = await Queue.aggregate([
-    {
-      $match: {
-        event: new mongoose.Types.ObjectId(event._id),
-        served: true,
-      },
-    },
-    {
-      $group: {
-        _id: null,
-        averageQueueTime: { $avg: "$queueTime" },
-      },
-    },
-  ]);
-
-  return {
-    ...event.toObject(),
-    totalQueues,
-    servedQueues,
-    averageQueueTime: averageQueueTime[0]?.averageQueueTime || 0,
-  };
+  return await getAnalytics(event.toObject());
 }
 
 export async function getEventAnalytics(req, res, next) {
