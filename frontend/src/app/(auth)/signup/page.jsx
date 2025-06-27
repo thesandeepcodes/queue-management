@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useFetch } from '@/hooks/useFetch';
 import { toast, ToastContainer } from 'react-toastify';
 import { useRouter } from 'next/navigation';
+import Input from '@/components/base/Input';
 
 
 export default function SignUp() {
@@ -71,76 +72,56 @@ export default function SignUp() {
 
                 <form onSubmit={handleSignUp} className="space-y-6">
                     {/* Name */}
-                    <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-400">
-                            <IoPerson className="h-5 w-5" />
-                        </div>
-                        <input
-                            type="text"
-                            name="name"
-                            id="name"
-                            value={name}
-                            disabled={loading}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Your full name"
-                            required
-                            className="w-full pl-10 pr-4 py-3 disabled:opacity-50 rounded-lg border border-neutral-600 ring-neutral-500 transition-colors duration-300 focus:ring-1 focus:outline-none"
-                        />
-                    </div>
+                    <Input
+                        type="text"
+                        name="name"
+                        id="name"
+                        value={name}
+                        disabled={loading}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Your full name"
+                        required
+                        iconLeft={<IoPerson className='w-5 h-5' />}
+                    />
 
                     {/* Email */}
-                    <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-400">
-                            <IoMail className="h-5 w-5" />
-                        </div>
-                        <input
-                            type="email"
-                            name="email"
-                            id="email"
-                            disabled={loading}
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="name@example.com"
-                            required
-                            className="w-full pl-10 pr-4 py-3 disabled:opacity-50 rounded-lg border border-neutral-600 ring-neutral-500 transition-colors duration-300 focus:ring-1 focus:outline-none"
-                        />
-                    </div>
+                    <Input
+                        type="email"
+                        name="email"
+                        id="email"
+                        disabled={loading}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="name@example.com"
+                        required
+                        iconLeft={<IoMail className='w-5 h-5' />}
+                    />
 
                     {/* Password */}
-                    <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center text-neutral-400 pointer-events-none">
-                            <IoLockClosed className="h-5 w-5" />
-                        </div>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={password}
-                            disabled={loading}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Create a password"
-                            required
-                            className="w-full pl-10 pr-4 py-3 rounded-lg border disabled:opacity-50 border-neutral-600 ring-neutral-500 transition-colors duration-300 focus:ring-1 focus:outline-none"
-                        />
-                    </div>
+                    <Input
+                        type="password"
+                        id="password"
+                        name="password"
+                        value={password}
+                        disabled={loading}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Create a password"
+                        required
+                        iconLeft={<IoLockClosed className='w-5 h-5' />}
+                    />
 
                     {/* Confirm Password */}
-                    <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center text-neutral-400 pointer-events-none">
-                            <IoLockClosed className="h-5 w-5" />
-                        </div>
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            name="confirmPassword"
-                            value={confirmPassword}
-                            disabled={loading}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            placeholder="Confirm password"
-                            required
-                            className="w-full pl-10 pr-4 py-3 rounded-lg disabled:opacity-50 border border-neutral-600 ring-neutral-500 transition-colors duration-300 focus:ring-1 focus:outline-none"
-                        />
-                    </div>
+                    <Input
+                        type="password"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        value={confirmPassword}
+                        disabled={loading}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Confirm password"
+                        required
+                        iconLeft={<IoLockClosed className='w-5 h-5' />}
+                    />
 
                     <div className='p-3 text-sm text-red-400 items-center gap-2 bg-red-950 rounded-md hidden'>
                         <IoInformationCircle />

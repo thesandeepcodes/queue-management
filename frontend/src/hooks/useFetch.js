@@ -1,8 +1,12 @@
+import { request } from "@/lib/client/request";
 import { useState, useEffect, useCallback } from "react";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-
-export function useFetch(endpoint, options = {}, immediate = true) {
+export function useFetch(
+  endpoint,
+  options = {},
+  immediate = true,
+  onSuccess = (data) => {}
+) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(immediate);
   const [error, setError] = useState({
@@ -11,26 +15,13 @@ export function useFetch(endpoint, options = {}, immediate = true) {
     message: "",
   });
 
-  if (!BASE_URL) {
-    throw new Error("API_BASE_URL is not defined");
-  }
-
   const fetchData = useCallback(async () => {
     setLoading(true);
 
     let encounteredError = true;
 
     try {
-      const res = await fetch(`${BASE_URL}${endpoint}`, {
-        headers: {
-          "Content-Type": "application/json",
-          ...(options.headers || {}),
-        },
-        credentials: "include",
-        ...options,
-      });
-
-      const result = await res.json();
+      const result = await request(endpoint, options);
 
       if (result.status !== "success") {
         setError({
@@ -41,6 +32,7 @@ export function useFetch(endpoint, options = {}, immediate = true) {
       }
 
       if (result.status == "success") {
+        onSuccess(result);
         setData(result);
         encounteredError = false;
       }
@@ -67,7 +59,15 @@ export function useFetch(endpoint, options = {}, immediate = true) {
     if (immediate) {
       fetchData();
     }
-  }, [fetchData, immediate]);
+  }, []);
 
-  return { data, loading, setLoading, error, setError, refetch: fetchData };
+  return {
+    data,
+    setData,
+    loading,
+    setLoading,
+    error,
+    setError,
+    refetch: fetchData,
+  };
 }

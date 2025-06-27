@@ -3,11 +3,15 @@
 :root {
   --background: #F9FAFB;
   --foreground: #111827;
+
+  --scrollbar-color: rgba(0, 0, 0, 0.1) rgba(255, 255, 255, 0.1); 
 }
 
 .dark{
   --background: #121212;
   --foreground: #ededed;
+  
+  --scrollbar-color: rgba(255, 255, 255, 0.1) rgba(255, 255, 255, 0.1);
 }
 
 @theme {
@@ -39,4 +43,38 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  scrollbar-color: var(--scrollbar-color); 
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.animate-fadeIn{
+  animation: fadeIn 0.3s ease-in-out both;
+}
+
+.animate-fadeInScale{
+  animation: fadeInScale 0.3s ease-in-out both;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInScale {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }

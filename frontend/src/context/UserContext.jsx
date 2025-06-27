@@ -1,15 +1,38 @@
 "use client";
 
-const { createContext, useContext, useState } = require("react");
+import { request } from "@/lib/client/request";
+
+const { createContext, useContext, useState, useEffect } = require("react");
 
 const UserContext = createContext(null);
 
 export function UserProvider({ children, userData }) {
     const [loggedIn, setLoggedIn] = useState(userData ? true : false);
+    const [user, setUser] = useState({});
+    const [loadedUser, setLoadedUser] = useState(false);
+
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (loggedIn && mounted) {
+            (async () => {
+                const userData = await request('/auth/me');
+
+                setUser(userData?.data || {});
+                setLoadedUser(true);
+            })();
+        }
+    }, [mounted]);
 
     return <UserContext.Provider value={{
         loggedIn,
-        setLoggedIn
+        setLoggedIn,
+        user,
+        loadedUser,
     }}>{children}</UserContext.Provider>;
 }
 

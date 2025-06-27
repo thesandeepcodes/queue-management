@@ -1,7 +1,7 @@
 import "react-toastify/dist/ReactToastify.css";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/globals.css";
-import { ThemeProvider } from "@/context/ThemeProvider";
+import { ThemeProvider } from "@/context/ThemeContext";
 import { getUser } from "@/lib/server/user";
 import { UserProvider } from "@/context/UserContext";
 

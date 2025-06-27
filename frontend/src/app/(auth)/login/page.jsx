@@ -1,5 +1,6 @@
 "use client";
 
+import Input from '@/components/base/Input';
 import { useUser } from '@/context/UserContext';
 import { useFetch } from '@/hooks/useFetch';
 import Link from 'next/link';
@@ -35,7 +36,7 @@ export default function Login() {
 
             setTimeout(() => {
                 router.push('/dashboard');
-            }, 1000);
+            }, 400);
         }
     }, [data]);
 
@@ -95,40 +96,30 @@ export default function Login() {
 
                         <form onSubmit={handleLogin} className="space-y-6">
                             {/* Email Input */}
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-400">
-                                    <IoMail className="h-5 w-5" />
-                                </div>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    value={email}
-                                    disabled={loading}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="name@example.com"
-                                    required
-                                    className="w-full disabled:opacity-50 border-neutral-600 ring-neutral-500 pl-10 pr-4 py-3 rounded-lg border transition-colors duration-300 focus:ring-1 focus:outline-none"
-                                />
-                            </div>
+                            <Input
+                                type="email"
+                                id="email"
+                                name="email"
+                                value={email}
+                                disabled={loading}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="name@example.com"
+                                required
+                                iconLeft={<IoMail className="h-5 w-5" />}
+                            />
 
                             {/* Password Input */}
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center text-neutral-400 pointer-events-none">
-                                    <IoLockClosed className="h-5 w-5" />
-                                </div>
-                                <input
-                                    type="password"
-                                    id="password"
-                                    name="password"
-                                    disabled={loading}
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="••••••••"
-                                    required
-                                    className="w-full disabled:opacity-50 pl-10 pr-4 py-3 rounded-lg border border-neutral-600 ring-neutral-500 transition-colors duration-300 focus:ring-1 focus:outline-none"
-                                />
-                            </div>
+                            <Input
+                                type="password"
+                                id="password"
+                                name="password"
+                                disabled={loading}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="••••••••"
+                                required
+                                iconLeft={<IoLockClosed className="h-5 w-5" />}
+                            />
 
                             <div className="flex items-center justify-between">
                                 <label htmlFor="remember-me" className={`flex items-center ${loading ? 'opacity-80 pointer-events-none' : ''}`}>
