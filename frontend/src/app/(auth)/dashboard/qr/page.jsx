@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { FiLoader } from "react-icons/fi";
 
-export default function Notifications() {
+export default function QrCodes() {
     const [events, setEvents] = useState([]);
 
     const { data: eventData, setData: setEventData, loading: fetchingEvent, error: eventError } = useFetch(`/events`, {}, true, (result) => {
@@ -20,14 +20,14 @@ export default function Notifications() {
     ) : (
         <div>
             <DashboardTitleBar
-                title={"Notifications"}
-                description={"Manage your notifications and their settings."}
+                title={"Qr Codes"}
+                description={"Generate qr codes for your events."}
             />
 
             <div className="grid grid-cols-3 gap-4">
                 {
                     events.map((event) => (
-                        <Link href={`/dashboard/notifications/${event._id}`} key={event._id} className="border border-neutral-800 cursor-pointer select-none hover:bg-neutral-800/50 transition-colors rounded-md p-4 bg-neutral-900">
+                        <Link href={`/dashboard/qr/${event._id}`} key={event._id} className="border border-neutral-800 cursor-pointer select-none hover:bg-neutral-800/50 transition-colors rounded-md p-4 bg-neutral-900">
                             {event.name}
                         </Link>
                     ))

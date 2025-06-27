@@ -9,7 +9,7 @@ import DashboardTitleBar from "@/components/layout/dashboard/TitleBar";
 import { useFetch } from "@/hooks/useFetch";
 import { formatDate } from "@/lib/client/date";
 import { use, useEffect, useState } from "react";
-import { FiCalendar, FiInfo, FiLoader, FiPlus, FiStar, FiTrash, FiUser } from "react-icons/fi";
+import { FiCalendar, FiInfo, FiLoader, FiMap, FiPlus, FiStar, FiTrash, FiUser } from "react-icons/fi";
 import { IoWarning } from "react-icons/io5";
 
 export default function EditEvent({ params }) {
@@ -22,6 +22,9 @@ export default function EditEvent({ params }) {
     const [currentPosition, setCurrentPosition] = useState(0);
     const [additionalInfo, setAdditionalInfo] = useState([]);
 
+    const [registrationTitle, setRegistrationTitle] = useState("");
+    const [registrationDescription, setRegistrationDescription] = useState("");
+
     const [eventStartTime, setEventStartTime] = useState("");
     const [eventEndTime, setEventEndTime] = useState("");
     const [venue, setVenue] = useState("");
@@ -32,6 +35,8 @@ export default function EditEvent({ params }) {
             name: name,
             description: description,
             eventDate: eventDate,
+            registrationTitle,
+            registrationDescription,
             currentPosition: Number(currentPosition) || 0,
             maxAttendees: Number(maxAttendees) || 0,
             additionalInfo: additionalInfo.filter(info => info.name.trim() !== ''),
@@ -55,7 +60,7 @@ export default function EditEvent({ params }) {
         }
 
         const previousData = eventData.data;
-        const updatedData = { ...previousData, name, description, eventDate: new Date(eventDate), maxAttendees: Number(maxAttendees) || 0, currentPosition, additionalInfo, eventStartTime: new Date(eventStartTime), eventEndTime: new Date(eventEndTime), venue };
+        const updatedData = { ...previousData, name, description, eventDate: new Date(eventDate), maxAttendees: Number(maxAttendees) || 0, currentPosition, additionalInfo, eventStartTime: new Date(eventStartTime), eventEndTime: new Date(eventEndTime), venue, registrationTitle, registrationDescription };
 
         if (JSON.stringify(previousData) === JSON.stringify(updatedData)) {
             setError({ show: true, message: "No changes detected." });
@@ -79,6 +84,8 @@ export default function EditEvent({ params }) {
             setMaxAttendees(eventData.data.maxAttendees > 0 ? eventData.data.maxAttendees : '');
             setAdditionalInfo(eventData.data.additionalInfo || []);
             setCurrentPosition(eventData.data.currentPosition);
+            setRegistrationTitle(eventData.data.registrationTitle);
+            setRegistrationDescription(eventData.data.registrationDescription);
 
             setEventStartTime(eventData.data.eventStartTime);
             setEventEndTime(eventData.data.eventEndTime);
@@ -148,7 +155,7 @@ export default function EditEvent({ params }) {
 
                     <TextArea
                         className={`col-span-4`}
-                        rows={4}
+                        rows={2}
                         required
                         disabled={loading}
                         value={description}
@@ -161,7 +168,7 @@ export default function EditEvent({ params }) {
                     <span className="relative bottom-3 bg-background px-3 text-neutral-400">Optional</span>
                 </div>
 
-                <div className="mt-12 mb-10 grid grid-cols-2 gap-4">
+                <div className="mt-12 mb-10 grid grid-cols-3 gap-7">
                     <div>
                         <label className="block mb-3 text-neutral-500 text-sm">Start Time</label>
                         <Input
@@ -169,7 +176,6 @@ export default function EditEvent({ params }) {
                             disabled={loading}
                             value={formatDate(eventStartTime, "yyyy-MM-ddTHH:mm:ss")}
                             onChange={(e) => setEventStartTime(e.target.value)}
-                            iconLeft={<FiInfo className="w-4.5 h-4.5" />}
                             placeholder="Event Start Time" />
                     </div>
 
@@ -180,17 +186,44 @@ export default function EditEvent({ params }) {
                             disabled={loading}
                             value={formatDate(eventEndTime, "yyyy-MM-ddTHH:mm:ss")}
                             onChange={(e) => setEventEndTime(e.target.value)}
-                            iconLeft={<FiInfo className="w-4.5 h-4.5" />}
                             placeholder="Event End Time" />
                     </div>
 
-                    <Input
-                        type="text"
-                        disabled={loading}
-                        value={venue}
-                        onChange={(e) => setVenue(e.target.value)}
-                        iconLeft={<FiInfo className="w-4.5 h-4.5" />}
-                        placeholder="Venue" />
+                    <div>
+                        <label className="block mb-3 text-neutral-500 text-sm">Venue</label>
+
+                        <Input
+                            type="text"
+                            disabled={loading}
+                            value={venue}
+                            onChange={(e) => setVenue(e.target.value)}
+                            iconLeft={<FiMap className="w-4.5 h-4.5" />}
+                            placeholder="Venue" />
+                    </div>
+
+                    <div className="col-span-3">
+                        <label className="block mb-3 text-neutral-500 text-sm">Registration Title</label>
+                        <Input
+                            type="text"
+                            disabled={loading}
+                            value={registrationTitle}
+                            onChange={(e) => setRegistrationTitle(e.target.value)}
+                            placeholder="Registration Title" />
+                    </div>
+
+
+                    <div className="col-span-3">
+                        <label className="block mb-3 text-neutral-500 text-sm">Registration Description</label>
+
+                        <TextArea
+                            className={`col-span-3`}
+                            rows={6}
+                            disabled={loading}
+                            value={registrationDescription}
+                            onChange={(e) => setRegistrationDescription(e.target.value)}
+                            placeholder="Registration Description"
+                        />
+                    </div>
                 </div>
 
                 <div className="bg-neutral-900 rounded-md p-4 mt-4">

@@ -7,7 +7,7 @@ import TextArea from "@/components/base/TextArea";
 import DashboardTitleBar from "@/components/layout/dashboard/TitleBar";
 import { useFetch } from "@/hooks/useFetch";
 import { useEffect, useState } from "react";
-import { FiCalendar, FiInfo, FiLoader, FiPlus, FiStar, FiTrash, FiUser } from "react-icons/fi";
+import { FiCalendar, FiInfo, FiLoader, FiMap, FiPlus, FiStar, FiTrash, FiUser } from "react-icons/fi";
 import { IoWarning } from "react-icons/io5";
 
 export default function CreateEvent() {
@@ -16,6 +16,8 @@ export default function CreateEvent() {
     const [eventDate, setEventDate] = useState("");
     const [maxAttendees, setMaxAttendees] = useState("");
     const [additionalInfo, setAdditionalInfo] = useState([]);
+    const [registrationTitle, setRegistrationTitle] = useState("");
+    const [registrationDescription, setRegistrationDescription] = useState("");
 
     const [eventStartTime, setEventStartTime] = useState("");
     const [eventEndTime, setEventEndTime] = useState("");
@@ -26,6 +28,8 @@ export default function CreateEvent() {
         body: JSON.stringify({
             name: name,
             description: description,
+            registrationTitle,
+            registrationDescription,
             eventDate: eventDate,
             maxAttendees: Number(maxAttendees) || 0,
             additionalInfo: additionalInfo.filter(info => info.name.trim() !== ''),
@@ -54,6 +58,8 @@ export default function CreateEvent() {
             setEventDate('');
             setMaxAttendees('');
             setAdditionalInfo([]);
+            setRegistrationTitle('');
+            setRegistrationDescription('');
             setError({ show: false, message: '' });
         }
     }, [data]);
@@ -93,7 +99,7 @@ export default function CreateEvent() {
 
                     <TextArea
                         className={`col-span-3`}
-                        rows={4}
+                        rows={2}
                         required
                         disabled={loading}
                         value={description}
@@ -106,7 +112,7 @@ export default function CreateEvent() {
                     <span className="relative bottom-3 bg-background px-3 text-neutral-400">Optional</span>
                 </div>
 
-                <div className="mt-12 mb-10 grid grid-cols-2 gap-4">
+                <div className="mt-12 mb-10 grid grid-cols-3 gap-7">
                     <div>
                         <label className="block mb-3 text-neutral-500 text-sm">Start Time</label>
                         <Input
@@ -114,7 +120,6 @@ export default function CreateEvent() {
                             disabled={loading}
                             value={eventStartTime}
                             onChange={(e) => setEventStartTime(e.target.value)}
-                            iconLeft={<FiInfo className="w-4.5 h-4.5" />}
                             placeholder="Event Start Time" />
                     </div>
 
@@ -125,17 +130,43 @@ export default function CreateEvent() {
                             disabled={loading}
                             value={eventEndTime}
                             onChange={(e) => setEventEndTime(e.target.value)}
-                            iconLeft={<FiInfo className="w-4.5 h-4.5" />}
                             placeholder="Event End Time" />
                     </div>
 
-                    <Input
-                        type="text"
-                        disabled={loading}
-                        value={venue}
-                        onChange={(e) => setVenue(e.target.value)}
-                        iconLeft={<FiInfo className="w-4.5 h-4.5" />}
-                        placeholder="Venue" />
+                    <div>
+                        <label className="block mb-3 text-neutral-500 text-sm">Venue</label>
+                        <Input
+                            type="text"
+                            disabled={loading}
+                            value={venue}
+                            onChange={(e) => setVenue(e.target.value)}
+                            iconLeft={<FiMap className="w-4.5 h-4.5" />}
+                            placeholder="Venue" />
+                    </div>
+
+                    <div className="col-span-3">
+                        <label className="block mb-3 text-neutral-500 text-sm">Registration Title</label>
+
+                        <Input
+                            type="text"
+                            disabled={loading}
+                            value={registrationTitle}
+                            onChange={(e) => setRegistrationTitle(e.target.value)}
+                            placeholder="Registration Title" />
+                    </div>
+
+                    <div className="col-span-3">
+                        <label className="block mb-3 text-neutral-500 text-sm">Registration Description</label>
+
+                        <TextArea
+                            className={`col-span-3`}
+                            rows={6}
+                            disabled={loading}
+                            value={registrationDescription}
+                            onChange={(e) => setRegistrationDescription(e.target.value)}
+                            placeholder="Registration Description"
+                        />
+                    </div>
                 </div>
 
                 <div className="bg-neutral-900 rounded-md p-4 mt-4">

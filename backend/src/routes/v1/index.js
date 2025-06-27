@@ -7,7 +7,6 @@ import AppError from "../../errors/AppError.js";
 
 import authRoutes from "./auth.js";
 import eventRoutes from "./events.js";
-import qrRoutes from "./qr.js";
 import guestRoutes from "./guests.js";
 import queueRoutes from "./queue.js";
 import notificationRoutes from "./notifications.js";
@@ -27,7 +26,6 @@ v1Routes.get("/", (req, res) => {
 // Routes
 v1Routes.use("/auth", authRoutes);
 v1Routes.use("/events", eventRoutes);
-v1Routes.use("/qr", qrRoutes);
 v1Routes.use("/guests", guestRoutes);
 v1Routes.use("/queue", queueRoutes);
 v1Routes.use("/notifications", notificationRoutes);

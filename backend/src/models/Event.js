@@ -14,6 +14,8 @@ const eventSchema = new mongoose.Schema(
     completed: { type: Boolean, default: false },
     eventStartTime: { type: Date, default: Date.now },
     eventEndTime: { type: Date, default: Date.now },
+    registrationTitle: { type: String, default: "" },
+    registrationDescription: { type: String, default: "" },
     venue: {
       type: String,
       default: "",

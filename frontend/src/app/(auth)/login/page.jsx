@@ -16,7 +16,7 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const [remember, setRemember] = useState(false);
 
-    const { loggedIn, setLoggedIn } = useUser();
+    const { loggedIn, setLoggedIn, setUser } = useUser();
 
     const router = useRouter();
 
@@ -33,6 +33,7 @@ export default function Login() {
 
             setPassword('');
             setEmail('');
+            setLoggedIn(true);
 
             setTimeout(() => {
                 router.push('/dashboard');

@@ -22,6 +22,12 @@ export const eventCreationSchema = z.object({
     })
     .optional(),
   venue: z.string({ required_error: "Event venue is required" }).optional(),
+  registrationTitle: z
+    .string({ required_error: "Registration title is required" })
+    .optional(),
+  registrationDescription: z
+    .string({ required_error: "Registration description is required" })
+    .optional(),
   maxAttendees: z
     .number({ required_error: "Max attendees is required" })
     .min(0)
@@ -54,6 +60,12 @@ export const eventUpdateSchema = z
     }),
     eventEndTime: z.coerce.date({
       required_error: "Event end time is required",
+    }),
+    registrationTitle: z.string({
+      required_error: "Registration title is required",
+    }),
+    registrationDescription: z.string({
+      required_error: "Registration description is required",
     }),
     venue: z.string({ required_error: "Event venue is required" }),
     completed: z.boolean(),

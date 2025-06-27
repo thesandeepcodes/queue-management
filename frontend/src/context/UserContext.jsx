@@ -2,7 +2,7 @@
 
 import { request } from "@/lib/client/request";
 
-const { createContext, useContext, useState, useEffect } = require("react");
+import { createContext, useContext, useState, useEffect } from "react";
 
 const UserContext = createContext(null);
 
@@ -26,12 +26,13 @@ export function UserProvider({ children, userData }) {
                 setLoadedUser(true);
             })();
         }
-    }, [mounted]);
+    }, [mounted, loggedIn]);
 
     return <UserContext.Provider value={{
         loggedIn,
         setLoggedIn,
         user,
+        setUser,
         loadedUser,
     }}>{children}</UserContext.Provider>;
 }

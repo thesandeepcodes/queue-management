@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { FiBell, FiCalendar } from "react-icons/fi";
+import { IoQrCode } from "react-icons/io5";
 
 const { createContext, useContext, useState, useEffect } = require("react");
 
@@ -24,6 +25,13 @@ export const DashboardProvider = ({ children }) => {
             title: "Notifications",
             tabTitle: "Manage Notifications",
             tabDes: "Manage your notifications and their settings."
+        },
+        {
+            name: "qr",
+            icon: <IoQrCode className="w-5 h-5" />,
+            title: "QR Code",
+            tabTitle: "Generate QR Code",
+            tabDes: "Generate a QR code for your events."
         }
     ];
 
@@ -41,7 +49,9 @@ export const DashboardProvider = ({ children }) => {
 
     return <DashboardContext.Provider value={{
         tab, setTab, tabs
-    }}>{children}</DashboardContext.Provider>
+    }}>
+        {children}
+    </DashboardContext.Provider>
 }
 
 export const useDashboard = () => {

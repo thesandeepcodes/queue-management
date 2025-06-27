@@ -123,6 +123,8 @@ export async function updateEvent(req, res, next) {
         completed: event.completed,
         eventStartTime: event.eventStartTime,
         eventEndTime: event.eventEndTime,
+        registrationTitle: event.registrationTitle,
+        registrationDescription: event.registrationDescription,
         venue: event.venue,
       })
     );
