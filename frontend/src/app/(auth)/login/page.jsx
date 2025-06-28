@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { FiHome, FiLoader, FiLogOut } from 'react-icons/fi';
 import { IoInformationCircle, IoLockClosed, IoLogoGoogle, IoMail } from "react-icons/io5";
+import { MdSpaceDashboard } from 'react-icons/md';
 import { toast, ToastContainer } from 'react-toastify';
 
 
@@ -36,7 +37,7 @@ export default function Login() {
             setLoggedIn(true);
 
             setTimeout(() => {
-                router.push('/dashboard');
+                router.push('/dashboard/events');
             }, 400);
         }
     }, [data]);
@@ -72,9 +73,9 @@ export default function Login() {
                         </div>
 
                         <div className='mt-4 grid grid-cols-2 gap-4'>
-                            <Link className='p-3 flex items-center justify-center gap-2 rounded-lg bg-primary text-white' href={'/'}>
-                                <FiHome />
-                                <span>Back to Home</span>
+                            <Link className='p-3 flex items-center justify-center gap-2 rounded-lg bg-primary text-white' href={'/dashboard/events'}>
+                                <MdSpaceDashboard />
+                                <span>Dashboard</span>
                             </Link>
 
                             <button onClick={logoutRefetch} className={`p-3 ${logoutLoading ? 'pointer-events-none opacity-60' : ''} cursor-pointer select-none hover:bg-red-700 transition active:scale-102 flex items-center justify-center gap-2 rounded-lg bg-red-800 text-white`} >

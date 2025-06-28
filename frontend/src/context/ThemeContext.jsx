@@ -39,7 +39,11 @@ export function ThemeProvider({
         }, 1000);
 
         try {
-            window.localStorage.setItem(storageKey, theme);
+            if (defaultTheme === 'system') {
+                window.localStorage.removeItem(storageKey);
+            } else {
+                window.localStorage.setItem(storageKey, theme);
+            }
         } catch (e) {
             console.warn('Failed to save theme to localStorage', e);
         }

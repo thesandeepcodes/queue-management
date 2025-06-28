@@ -61,7 +61,7 @@ export default async function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <UserProvider userData={user}>
-          <ThemeProvider defaultTheme="dark" storageKey="site-theme">
+          <ThemeProvider defaultTheme="system" storageKey="site-theme">
             {children}
           </ThemeProvider>
         </UserProvider>
