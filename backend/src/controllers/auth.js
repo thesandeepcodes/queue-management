@@ -38,6 +38,15 @@ export const registerUser = async (req, res, next) => {
   }
 };
 
+export const logoutUser = async (req, res, next) => {
+  try {
+    res.clearCookie("_Secure-Token");
+    return res.json(createResponse(true, "Logout successful"));
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -61,6 +70,16 @@ export const loginUser = async (req, res, next) => {
     }
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+
+    const cookieName =
+      process.env.NODE_ENV == "production" ? "__Secure-Token" : "_Secure-Token";
+
+    res.cookie(cookieName, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    });
 
     return res.json(createResponse(true, "Login successful", { token }));
   } catch (error) {

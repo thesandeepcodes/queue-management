@@ -16,7 +16,7 @@ export async function getNotifications(req, res, next) {
       );
     }
 
-    const notifications = await Notification.find({ event: eventId });
+    const notifications = await Notification.findOne({ event: eventId });
 
     return res.json(
       createResponse(true, "Notification fetched successfully", notifications)
@@ -34,7 +34,7 @@ export async function pushNotification(req, res, next) {
     const result = pushNotificationSchema.safeParse(req.body);
     if (!result.success) throw result.error;
 
-    const { message } = result.data;
+    const notificationData = result.data;
 
     if (!mongoose.isValidObjectId(eventId)) {
       throw new AppError(
@@ -51,7 +51,7 @@ export async function pushNotification(req, res, next) {
     }
 
     const notification = await Notification.create({
-      message,
+      ...notificationData,
       event: eventId,
       createdBy: userId,
     });
@@ -60,6 +60,7 @@ export async function pushNotification(req, res, next) {
       createResponse(true, "Notification sent to attendees", notification)
     );
   } catch (e) {
+    console.log(e.message);
     next(e);
   }
 }
@@ -94,9 +95,12 @@ export async function updateNotification(req, res, next) {
     const result = pushNotificationSchema.safeParse(req.body);
     if (!result.success) throw result.error;
 
-    const { message } = result.data;
+    const notificationData = result.data;
 
-    notification.message = message;
+    Object.entries(notificationData).forEach(([key, value]) => {
+      notification[key] = value;
+    });
+
     await notification.save();
 
     return res.json(

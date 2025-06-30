@@ -6,13 +6,14 @@ import {
   getEvents,
   updateEvent,
 } from "../../controllers/events.js";
+import authorizeUser from "../../middlewares/authorizeUser.js";
 
 const router = Router();
 
-router.get("/", getEvents);
-router.post("/create", createEvent);
+router.get("/", authorizeUser, getEvents);
+router.post("/create", authorizeUser, createEvent);
 router.get("/:eventId", getEvent);
-router.put("/:eventId", updateEvent);
-router.delete("/:eventId", deleteEvent);
+router.put("/:eventId", authorizeUser, updateEvent);
+router.delete("/:eventId", authorizeUser, deleteEvent);
 
 export default router;
