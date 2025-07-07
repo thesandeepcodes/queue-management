@@ -16,6 +16,7 @@ export const queueCreationSchema = z.object({
     .array(
       z.object({
         name: z.string(),
+        value: z.string(),
       })
     )
     .optional(),

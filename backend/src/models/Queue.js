@@ -30,6 +30,7 @@ const queueSchema = new mongoose.Schema(
       type: [
         {
           name: String,
+          value: String,
           _id: false,
         },
       ],

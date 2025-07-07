@@ -33,6 +33,8 @@ export default function JoinEvent({ params }) {
         additionalInfo: additionalInfo.filter(info => info.name.trim() !== ''),
     }
 
+    console.log(reqData);
+
     if (!email.trim()) delete reqData.email;
 
     const { data: joinData, loading: joining, error: joinError, setError: setJoinError, refetch } = useFetch(`/guests/join/${eventId}`, {
@@ -122,13 +124,14 @@ export default function JoinEvent({ params }) {
             localStorage.removeItem(`${eventId}_guestId`);
             setJoined(false);
         }
-    }, [exitError])
+    }, [exitError]);
 
     useEffect(() => {
-        if (!error?.show) {
-            setAdditionalInfo((event?.additionalInfo || []).map(info => ({ name: "" })));
+        if (!error?.show && event?.additionalInfo?.length > 0 && additionalInfo.length === 0) {
+            setAdditionalInfo(event.additionalInfo.map(info => ({ name: info.name, value: "" })));
         }
-    }, [data]);
+    }, [event?.additionalInfo, error?.show]);
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -330,8 +333,8 @@ export default function JoinEvent({ params }) {
                                                                     type="string"
                                                                     required={item.required}
                                                                     placeholder={item.name}
-                                                                    value={additionalInfo[index]?.name || ""}
-                                                                    onChange={(e) => setAdditionalInfo(additionalInfo.map((info, infoIndex) => infoIndex === index ? { name: e.target.value } : info))}
+                                                                    value={additionalInfo[index]?.value || ""}
+                                                                    onChange={(e) => setAdditionalInfo(additionalInfo.map((info, infoIndex) => infoIndex === index ? { ...info, value: e.target.value } : info))}
                                                                 />
                                                             </div>
                                                         ))

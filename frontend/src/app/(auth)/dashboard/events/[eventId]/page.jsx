@@ -383,13 +383,11 @@ export default function ManageEvent({ params }) {
                                                 (currentGuest?.additionalInfo || []).length > 0 && (
                                                     <div className="mt-6 text-sm rounded-md overflow-auto max-h-[150px]">
                                                         {
-                                                            (currentGuest?.additionalInfo || []).map((infoObj, index) => (
-                                                                Object.entries(infoObj).map(([key, value]) => (
-                                                                    <div key={`${index}-${key}`} className="grid grid-cols-2 gap-2 bg-neutral-900 border-b border-neutral-800">
-                                                                        <div className="p-3 border-r border-neutral-800">{key}</div>
-                                                                        <div className="p-3">{value}</div>
-                                                                    </div>
-                                                                ))
+                                                            (currentGuest?.additionalInfo || []).map((info, index) => (
+                                                                <div key={`${index}-${index}`} className="grid grid-cols-2 gap-2 bg-neutral-900 border-b border-neutral-800">
+                                                                    <div className="p-3 border-r border-neutral-800">{info.name}</div>
+                                                                    <div className="p-3">{info.value}</div>
+                                                                </div>
                                                             ))
                                                         }
                                                     </div>
